@@ -1,1 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VII SCAC 2026 – Calendário de Atividades</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #e0ddd6;
+    --border2: #ccc9c0;
+    --text: #1a1a18;
+    --text2: #5a5954;
+    --text3: #9a9890;
+    --radius: 8px;
+    --col-w: 220px;
+    --slot-h: 36px;
+    --c-arte-bg: #fbeaf0; --c-arte-b: #d4537e; --c-arte-t: #72243e;
+    --c-oficina-bg: #e1f5ee; --c-oficina-b: #1d9e75; --c-oficina-t: #085041;
+    --c-palestra-bg: #e6f1fb; --c-palestra-b: #378add; --c-palestra-t: #0c447c;
+    --c-degust-bg: #faeeda; --c-degust-b: #ba7517; --c-degust-t: #633806;
+    --c-poster-bg: #eeedfe; --c-poster-b: #7f77dd; --c-poster-t: #3c3489;
+    --c-mesa-bg: #faece7; --c-mesa-b: #d85a30; --c-mesa-t: #712b13;
+    --c-expo-bg: #eaf3de; --c-expo-b: #639922; --c-expo-t: #27500a;
+    --c-indef-bg: #f1efe8; --c-indef-b: #888780; --c-indef-t: #444441;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 50; }
+  header h1 { font-size: 15px; font-weight: 600; }
+  header span { font-size: 12px; color: var(--text2); }
+  .hbtn { font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface); cursor: pointer; color: var(--text); transition: background 0.15s; }
+  .hbtn:hover { background: var(--bg); }
+  .hbtn.primary { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .hbtn.primary:hover { background: #333; }
+  header .spacer { flex: 1; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; height: calc(100vh - 49px); overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 260px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .sidebar-head { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
+  .sidebar-head h2 { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .sidebar-search { width: 100%; padding: 5px 8px; border: 1px solid var(--border2); border-radius: 6px; font-size: 12px; background: var(--bg); color: var(--text); }
+  .sidebar-search:focus { outline: none; border-color: #888; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ftag { font-size: 10px; padding: 2px 8px; border-radius: 20px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
+  .ftag.active { opacity: 1; }
+  .ftag:not(.active) { opacity: 0.4; }
+  .pool { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .pool-ev { border-radius: 6px; padding: 6px 8px; cursor: grab; border-left: 3px solid; user-select: none; transition: opacity 0.15s, box-shadow 0.15s; }
+  .pool-ev:active { cursor: grabbing; }
+  .pool-ev:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .pool-ev.dragging { opacity: 0.4; }
+  .pool-ev .ev-title { font-size: 11px; font-weight: 500; }
+  .pool-ev .ev-sub { font-size: 10px; opacity: 0.7; margin-top: 1px; }
+  .pool-ev.placed { opacity: 0.35; }
+
+  /* ── CALENDAR ── */
+  .cal-wrap { flex: 1; overflow: auto; padding: 16px; }
+  .cal-head { display: grid; grid-template-columns: 52px repeat(3, var(--col-w)); gap: 0; margin-bottom: 0; position: sticky; top: 0; background: var(--bg); z-index: 10; padding-bottom: 4px; }
+  .cal-head .col-label { text-align: center; font-size: 13px; font-weight: 600; padding: 6px 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px 6px 0 0; margin: 0 2px; }
+  .cal-head .col-label span { display: block; font-size: 10px; font-weight: 400; color: var(--text3); }
+  .cal-grid { display: grid; grid-template-columns: 52px repeat(3, var(--col-w)); gap: 0; }
+  .time-gutter { display: flex; flex-direction: column; }
+  .time-label { height: var(--slot-h); display: flex; align-items: flex-start; justify-content: flex-end; padding: 2px 6px 0 0; font-size: 10px; color: var(--text3); }
+  .day-col { position: relative; border: 1px solid var(--border); border-top: none; margin: 0 2px; background: var(--surface); }
+  .day-col .row-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--border); pointer-events: none; }
+  .day-col .row-line.hour { border-color: var(--border2); }
+  .drop-zone { position: absolute; left: 0; right: 0; transition: background 0.1s; }
+  .drop-zone.drag-over { background: rgba(55,138,221,0.08); }
+
+  /* ── CALENDAR EVENTS ── */
+  .cal-ev { position: absolute; left: 3px; right: 3px; border-radius: 5px; border-left: 3px solid; padding: 3px 5px; cursor: grab; overflow: hidden; user-select: none; transition: box-shadow 0.15s; z-index: 2; }
+  .cal-ev:active { cursor: grabbing; }
+  .cal-ev:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.18); z-index: 5; }
+  .cal-ev.dragging { opacity: 0.5; z-index: 20; }
+  .cal-ev .ev-title { font-size: 10.5px; font-weight: 500; line-height: 1.3; }
+  .cal-ev .ev-time { font-size: 9.5px; opacity: 0.75; }
+  .resize-handle { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; cursor: ns-resize; background: transparent; }
+  .resize-handle:hover { background: rgba(0,0,0,0.08); border-radius: 0 0 4px 4px; }
+
+  /* ── MODAL ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 20px 24px; width: 400px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .modal h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
+  .field input, .field select, .field textarea { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: 6px; font-size: 13px; color: var(--text); background: var(--bg); }
+  .field textarea { resize: vertical; min-height: 56px; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #555; }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .modal-btns .btn-del { margin-right: auto; color: #c0392b; border-color: #e8b4b4; background: #fef5f5; }
+  .modal-btns .btn-del:hover { background: #fde8e8; }
+  .time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* ── LEGEND ── */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--border); font-size: 10px; }
+  .leg { display: flex; align-items: center; gap: 4px; color: var(--text2); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── TOOLTIP ── */
+  #tooltip { position: fixed; background: #1a1a18; color: #fff; font-size: 11px; padding: 6px 10px; border-radius: 6px; pointer-events: none; display: none; z-index: 200; max-width: 220px; line-height: 1.5; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>VII SCAC 2026 – Calendário de Atividades</h1>
+  <span>IFB Campus Riacho Fundo · 09–11/06/2026</span>
+  <div class="spacer"></div>
+  <button class="hbtn" onclick="addNewActivity()">+ Nova atividade</button>
+  <button class="hbtn" onclick="exportJSON()">Exportar JSON</button>
+  <button class="hbtn primary" onclick="exportHTML()">Exportar calendário</button>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <h2>Atividades não agendadas</h2>
+      <input class="sidebar-search" type="text" placeholder="Buscar..." oninput="filterPool(this.value)">
+    </div>
+    <div class="filter-row" id="filter-row"></div>
+    <div class="pool" id="pool"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="cal-wrap" id="cal-wrap">
+    <div class="cal-head">
+      <div></div>
+      <div class="col-label">Terça-feira <span>09/06/2026</span></div>
+      <div class="col-label">Quarta-feira <span>10/06/2026</span></div>
+      <div class="col-label">Quinta-feira <span>11/06/2026</span></div>
+    </div>
+    <div class="cal-grid" id="cal-grid">
+      <div class="time-gutter" id="time-gutter"></div>
+      <div class="day-col" id="col-0" ondragover="onDragOver(event,0)" ondragleave="onDragLeave(event,0)" ondrop="onDrop(event,0)"></div>
+      <div class="day-col" id="col-1" ondragover="onDragOver(event,1)" ondragleave="onDragLeave(event,1)" ondrop="onDrop(event,1)"></div>
+      <div class="day-col" id="col-2" ondragover="onDragOver(event,2)" ondragleave="onDragLeave(event,2)" ondrop="onDrop(event,2)"></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend-row">
+  <div class="leg"><div class="leg-dot" style="background:#d4537e"></div>Apresentação artística</div>
+  <div class="leg"><div class="leg-dot" style="background:#1d9e75"></div>Oficina</div>
+  <div class="leg"><div class="leg-dot" style="background:#378add"></div>Palestra</div>
+  <div class="leg"><div class="leg-dot" style="background:#ba7517"></div>Aula-degustação</div>
+  <div class="leg"><div class="leg-dot" style="background:#7f77dd"></div>Pôster / Ap. oral</div>
+  <div class="leg"><div class="leg-dot" style="background:#d85a30"></div>Mesa redonda / Outros</div>
+  <div class="leg"><div class="leg-dot" style="background:#639922"></div>Exposição</div>
+  <div class="leg"><div class="leg-dot" style="background:#888780"></div>Indefinido</div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Editar atividade</h2>
+    <div class="field">
+      <label>Título</label>
+      <input type="text" id="f-title">
+    </div>
+    <div class="field">
+      <label>Tipo</label>
+      <select id="f-tipo">
+        <option value="arte">Apresentação artística</option>
+        <option value="oficina">Oficina</option>
+        <option value="palestra">Palestra</option>
+        <option value="degust">Aula-degustação</option>
+        <option value="poster">Pôster / Apresentação oral</option>
+        <option value="mesa">Mesa redonda / Outros</option>
+        <option value="expo">Exposição</option>
+        <option value="indef">Indefinido</option>
+      </select>
+    </div>
+    <div class="field time-row">
+      <div>
+        <label>Horário início</label>
+        <input type="time" id="f-start" value="08:00">
+      </div>
+      <div>
+        <label>Horário fim</label>
+        <input type="time" id="f-end" value="09:00">
+      </div>
+    </div>
+    <div class="field">
+      <label>Proponente(s)</label>
+      <input type="text" id="f-prop">
+    </div>
+    <div class="field">
+      <label>Observações</label>
+      <textarea id="f-obs" rows="2"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="hbtn btn-del" onclick="deleteActivity()">Excluir</button>
+      <button class="hbtn" onclick="closeModal()">Cancelar</button>
+      <button class="hbtn primary" onclick="saveActivity()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ── CONFIG ──
+const HOUR_START = 7;
+const HOUR_END   = 23;
+const SLOT_H     = 36; // px por hora
+
+const TIPO_LABELS = {
+  arte:"Apresentação artística", oficina:"Oficina", palestra:"Palestra",
+  degust:"Aula-degustação", poster:"Pôster / Ap. oral", mesa:"Mesa redonda / Outros",
+  expo:"Exposição", indef:"Indefinido"
+};
+
+const TIPO_COLORS = {
+  arte:   {bg:"#fbeaf0", b:"#d4537e", t:"#72243e"},
+  oficina:{bg:"#e1f5ee", b:"#1d9e75", t:"#085041"},
+  palestra:{bg:"#e6f1fb",b:"#378add", t:"#0c447c"},
+  degust: {bg:"#faeeda", b:"#ba7517", t:"#633806"},
+  poster: {bg:"#eeedfe", b:"#7f77dd", t:"#3c3489"},
+  mesa:   {bg:"#faece7", b:"#d85a30", t:"#712b13"},
+  expo:   {bg:"#eaf3de", b:"#639922", t:"#27500a"},
+  indef:  {bg:"#f1efe8", b:"#888780", t:"#444441"},
+};
+
+// ── DADOS ──
+let activities = [
+  // AGENDADAS - Terça 09/06 (dia=0)
+  {id:1, title:"Ato Infracional (palestra)", tipo:"palestra", dia:0, startH:9.0, endH:10.0, prop:"Maria da Glória / Jair Alves", obs:"Público: ensino médio. Auditório ou sala grande."},
+  {id:2, title:"Banda Lei Seca", tipo:"arte", dia:0, startH:9.5, endH:11.0, prop:"Victor Augusto", obs:"Pátio principal. Guitarra, bateria e vocal."},
+  {id:3, title:"Pulseira de Macramê (oficina)", tipo:"oficina", dia:0, startH:9.0, endH:11.5, prop:"Rejane Vago", obs:"20 vagas. Sala com mesas."},
+  {id:4, title:"Motivação/Inglês EJA (pôster)", tipo:"poster", dia:0, startH:13.0, endH:18.0, prop:"Beatriz Marcela Silva", obs:"Pôster. 10 vagas."},
+  {id:5, title:"Coord. Apresentações Orais – Letras", tipo:"poster", dia:0, startH:14.0, endH:16.0, prop:"Bruna Zocaratto", obs:"10 vagas. Sala de aula."},
+  {id:6, title:"Gamificação Inglês – Jogos Ped. (1)", tipo:"oficina", dia:0, startH:14.0, endH:17.67, prop:"M. Antonia Maia", obs:"20 vagas. Apenas sala de aula."},
+  {id:7, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:0, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma. Sala de aula."},
+  {id:8, title:"Site Interativo / Avaliação (PIBITI)", tipo:"poster", dia:0, startH:15.0, endH:16.5, prop:"Ana Beatriz Marques Rocha", obs:"Até 30 pessoas. Auditório ou sala com projetor."},
+  {id:9, title:"Puff-Puff & Poulet – Culinária Camaronesa", tipo:"degust", dia:0, startH:15.0, endH:17.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Laboratório de Cozinha."},
+  {id:10, title:"Duo La Obscuridad (dança jazz lyrical)", tipo:"arte", dia:0, startH:17.5, endH:18.0, prop:"Ludmila e Louise Fhaedra", obs:"Pátio ou auditório. Duração: 2min14."},
+  {id:11, title:"Oficina: O Capital (Marx)", tipo:"oficina", dia:0, startH:17.5, endH:20.0, prop:"Alex Rosa Campani", obs:"25 vagas. Sala de aula."},
+  {id:12, title:"SINPEHL – Pôsteres Pós-graduação", tipo:"poster", dia:0, startH:19.0, endH:21.0, prop:"Laeticia Jensen Eble", obs:"Até 20 pôsteres. Área em frente ao auditório."},
+  {id:13, title:"Para Além dos Muros da Escola (oral)", tipo:"poster", dia:0, startH:19.0, endH:20.5, prop:"Rogério Lustosa Victor", obs:"35 vagas. Sala de aula."},
+  {id:14, title:"Felicidade no Trabalho (palestra)", tipo:"palestra", dia:0, startH:19.0, endH:20.0, prop:"Andrea Duarte (convidada)", obs:"Sala com datashow e microfone."},
+  {id:15, title:"Agricultura Irrigada – Pivôs DF (palestra)", tipo:"palestra", dia:0, startH:19.5, endH:21.5, prop:"Jackson Ryller", obs:"25 vagas. Sala com projetor."},
+  {id:16, title:"Street Food do Benin (degustação)", tipo:"degust", dia:0, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"20 vagas. Lab. de Cozinha ou Bar/Restaurante."},
+  // Quarta 10/06 (dia=1)
+  {id:17, title:"Dia do Geógrafo (mesa redonda)", tipo:"mesa", dia:1, startH:8.0, endH:12.0, prop:"José Vandério Cirqueira", obs:"Auditório – dia inteiro. Lançamento de revista."},
+  {id:18, title:"Hiroshima e Nagasaki (apresentação oral)", tipo:"poster", dia:1, startH:10.0, endH:11.5, prop:"Rogério Lustosa Victor", obs:"35 vagas. Sala de aula."},
+  {id:19, title:"Kitchen Seminar – Pesquisa Internacional (online)", tipo:"oficina", dia:1, startH:10.0, endH:12.0, prop:"Ana Luiza de França Sá", obs:"Ilimitado. Google Meet."},
+  {id:20, title:"Banda Pessoas Portáteis (show)", tipo:"arte", dia:1, startH:11.0, endH:12.0, prop:"Marco Aurélio (UnB)", obs:"Até 100 pessoas. Espaço aberto."},
+  {id:21, title:"Pôsteres Letras-Inglês (TCC/PCC)", tipo:"poster", dia:1, startH:14.0, endH:15.0, prop:"Mariana Apoteker Souza", obs:"Até 40 pessoas. Pátio frente ao auditório."},
+  {id:22, title:"Oficina Caminhando e Cantando (Gullar)", tipo:"oficina", dia:1, startH:14.5, endH:17.0, prop:"Maria Julya Béda", obs:"20 vagas. Sala com projetor."},
+  {id:23, title:"Gamificação Inglês – Jogos Ped. (2)", tipo:"oficina", dia:1, startH:14.0, endH:17.67, prop:"M. Antonia Maia", obs:"20 vagas. Apenas sala de aula."},
+  {id:24, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:1, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma. Sala de aula."},
+  {id:25, title:"Metodologias Ativas Ens. Superior (PIBIC)", tipo:"mesa", dia:1, startH:14.0, endH:16.0, prop:"Ana Luiza de França Sá", obs:"Mesa redonda."},
+  {id:26, title:"PIBID – Socialização Letras-Inglês", tipo:"mesa", dia:1, startH:14.5, endH:16.5, prop:"Bruna Zocaratto", obs:"Sala 107 (grande)."},
+  {id:27, title:"Vivência Ballroom (mesa redonda)", tipo:"mesa", dia:1, startH:14.0, endH:17.5, prop:"Camila Gonçalves / UnB", obs:"20 vagas. Sala com datashow."},
+  {id:28, title:"Banda Lei Seca (show)", tipo:"arte", dia:1, startH:16.0, endH:17.5, prop:"Victor Augusto", obs:"Pátio principal."},
+  {id:29, title:"Preconceito Linguístico – Revista Eletr. (oral)", tipo:"poster", dia:1, startH:16.5, endH:17.5, prop:"Erick Lima / Bruna Zocaratto", obs:"Sala de aula. CNPq/PIBITI."},
+  {id:30, title:"Roda de Conversa: Clube do Livro", tipo:"mesa", dia:1, startH:18.0, endH:19.0, prop:"Mariana Apoteker Souza", obs:"20 vagas. Mezanino da biblioteca ou sala."},
+  {id:31, title:"Vivência Ballroom (2º turno)", tipo:"mesa", dia:1, startH:18.5, endH:21.5, prop:"Camila Gonçalves / UnB", obs:"Cultura ballroom – história e vogue."},
+  // Quinta 11/06 (dia=2)
+  {id:32, title:"Milton Santos + Gamificação / Geografia", tipo:"oficina", dia:2, startH:8.0, endH:12.0, prop:"José Vandério / ProfGeo", obs:"Oficina dia inteiro. Formação crítica."},
+  {id:33, title:"Escrevivência e Poesia (Evaristo / Lorde)", tipo:"oficina", dia:2, startH:14.0, endH:15.5, prop:"Luciana H. Mariano da Silva", obs:"25 vagas. Sala com datashow."},
+  {id:34, title:"Oficina de TTRPG (D&D / Ordem Paranormal)", tipo:"oficina", dia:2, startH:14.0, endH:16.0, prop:"Juliana Silva de Oliveira", obs:"10 vagas. Sala com mesas."},
+  {id:35, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:2, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma."},
+  {id:36, title:"Roda de Conversa: IA e Avaliação (LAFOPE)", tipo:"mesa", dia:2, startH:14.5, endH:16.0, prop:"Bruna Zocaratto", obs:"20 vagas. Sala de aula."},
+  {id:37, title:"Cinedebate – Diver/Cine (NEABI/NUGEDIS)", tipo:"mesa", dia:2, startH:14.5, endH:17.5, prop:"Isabella Mundim / Laeticia Eble / Luciana", obs:"Até 30. Sala com datashow e ar-cond."},
+  {id:38, title:"Banda Lei Seca (show noturno)", tipo:"arte", dia:2, startH:19.0, endH:20.5, prop:"Victor Augusto", obs:"Pátio principal."},
+  {id:39, title:"Terre et Mer (Canadá/Polinésia) – turma 1", tipo:"degust", dia:2, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Lab. de Cozinha."},
+  {id:40, title:"Terre et Mer (Canadá/Polinésia) – turma 2", tipo:"degust", dia:2, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Pode ser Lab. de Panificação."},
+  // NÃO AGENDADAS (dia=-1)
+  {id:41, title:"Banda GMT", tipo:"arte", dia:-1, startH:8.0, endH:9.0, prop:"Thiago Viana de Freitas / Giovanni Leite", obs:"Rock covers + autorais. Pátio coberto. Qualquer dia/horário."},
+  {id:42, title:"Banda Ondas do Riacho", tipo:"arte", dia:-1, startH:8.0, endH:9.0, prop:"Thiago Viana de Freitas", obs:"Projeto de extensão. Pátio coberto. Qualquer dia."},
+  {id:43, title:"Escola do Rock", tipo:"arte", dia:-1, startH:11.0, endH:12.5, prop:"José Giovanni / Thiago / Maurílio", obs:"100-150 pessoas. Auditório ou pátio. Sugestão: 10/06."},
+  {id:44, title:"Jukebox Teatral: Inglês em Cena", tipo:"arte", dia:-1, startH:14.33, endH:15.17, prop:"Newton Vieira Lima Neto + alunos Letras", obs:"50 min. Auditório. 09 ou 10/06, 2º ou 3º horário."},
+  {id:45, title:"Oficina de Zouk (dança a duas)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Marília de Almeida Silva (IFB Taguatinga)", obs:"30 vagas. Sala arejada. Sugestão: quarta."},
+  {id:46, title:"Oficinas Criativas NAPNE", tipo:"oficina", dia:-1, startH:9.0, endH:12.0, prop:"Higor Silva Leite / NAPNE", obs:"Horário flexível. Manhã ou tarde."},
+  {id:47, title:"Escutas Intergeracionais (Violência Digital)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Celiane Domingos de Albuquerque", obs:"Data a definir."},
+  {id:48, title:"Blackout Poetry (oficina)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Camila Gonçalves / Giovana Nicácio", obs:"20 vagas. 09 ou 11/06 a partir das 14h."},
+  {id:49, title:"Palestra: Tecnologia e Engenharia", tipo:"palestra", dia:-1, startH:14.0, endH:16.0, prop:"Thiago Freitas / Felipe Shimabuko", obs:"50 vagas. Tarde. 09, 10 ou 11/06."},
+  {id:50, title:"Palestra: Medicina – Desafios e Perspectivas", tipo:"palestra", dia:-1, startH:14.0, endH:16.0, prop:"Thiago Freitas / Gabriela Silva", obs:"50 vagas. Tarde. 09, 10 ou 11/06."},
+  {id:51, title:"Palestra: Alimentação e Nutrição", tipo:"palestra", dia:-1, startH:8.0, endH:10.0, prop:"Thiago Freitas / Fábio Cavalcante", obs:"50 vagas. 11/06 manhã ou tarde."},
+  {id:52, title:"Palestra: Uso de Medicamentos", tipo:"palestra", dia:-1, startH:9.0, endH:11.0, prop:"Thiago Freitas / Fernando Sá", obs:"50 vagas. 11/06, 9–11h ou 10–12h."},
+  {id:53, title:"Palestra: Educação Sexual e ISTs", tipo:"palestra", dia:-1, startH:16.5, endH:18.0, prop:"Wesley Dieno / Iasmim Cruz", obs:"Atenção: proposta para 07/06 – verificar data."},
+  {id:54, title:"Exposição: Diversidade e Arte (NEABI/NUGEDIS)", tipo:"expo", dia:-1, startH:9.0, endH:17.5, prop:"Luciana / Isabella / Laeticia", obs:"Todos os dias, rotativa. Sala com datashow."},
+  {id:55, title:"Exposição: Beleza do DF", tipo:"expo", dia:-1, startH:14.0, endH:17.0, prop:"Eduardo Lucena / Marina Costa", obs:"10 e 11/06, 14h–17h."},
+  {id:56, title:"Onde a Literatura Dorme (exposição)", tipo:"expo", dia:-1, startH:9.0, endH:17.0, prop:"M.Antonia Maia / Rejane Vago / Luiz Paulo", obs:"Todos os dias. Hall de entrada ou espaço de visibilidade."},
+  {id:57, title:"Equipe Multi EaD (pôster/exposição)", tipo:"expo", dia:-1, startH:9.0, endH:17.0, prop:"Ana Luiza de França Sá", obs:"Todo o período do evento."},
+  {id:58, title:"Stand do Meu INSS", tipo:"indef", dia:-1, startH:9.0, endH:12.0, prop:"Julianne Rodrigues", obs:"Sem data/horário definido."},
+];
+
+let nextId = 100;
+let dragId = null;
+let dragFromPool = false;
+let dragOffsetY = 0;
+let editingId = null;
+let filterTypes = new Set(Object.keys(TIPO_COLORS));
+let poolSearch = "";
+
+// ── INIT ──
+function init() {
+  buildTimeGutter();
+  buildDayLines();
+  buildFilterTags();
+  renderPool();
+  renderCalendar();
+}
+
+function buildTimeGutter() {
+  const g = document.getElementById("time-gutter");
+  g.style.height = ((HOUR_END - HOUR_START) * SLOT_H) + "px";
+  for (let h = HOUR_START; h <= HOUR_END; h++) {
+    const d = document.createElement("div");
+    d.className = "time-label";
+    d.textContent = h + "h";
+    g.appendChild(d);
+  }
+}
+
+function buildDayLines() {
+  const total = (HOUR_END - HOUR_START) * SLOT_H;
+  for (let d = 0; d < 3; d++) {
+    const col = document.getElementById("col-" + d);
+    col.style.height = total + "px";
+    for (let h = HOUR_START; h <= HOUR_END; h++) {
+      const line = document.createElement("div");
+      line.className = "row-line" + (h % 1 === 0 ? " hour" : "");
+      line.style.top = ((h - HOUR_START) * SLOT_H) + "px";
+      col.appendChild(line);
+    }
+  }
+}
+
+function buildFilterTags() {
+  const row = document.getElementById("filter-row");
+  row.innerHTML = '';
+  Object.entries(TIPO_LABELS).forEach(([k, label]) => {
+    const c = TIPO_COLORS[k];
+    const btn = document.createElement("div");
+    btn.className = "ftag active";
+    btn.textContent = label.split("/")[0].trim();
+    btn.style.background = c.bg;
+    btn.style.color = c.t;
+    btn.style.borderColor = c.b;
+    btn.dataset.tipo = k;
+    btn.onclick = () => {
+      if (filterTypes.has(k)) filterTypes.delete(k);
+      else filterTypes.add(k);
+      btn.classList.toggle("active", filterTypes.has(k));
+      renderPool();
+    };
+    row.appendChild(btn);
+  });
+}
+
+// ── POOL ──
+function filterPool(q) {
+  poolSearch = q.toLowerCase();
+  renderPool();
+}
+
+function renderPool() {
+  const pool = document.getElementById("pool");
+  pool.innerHTML = '';
+  const unscheduled = activities.filter(a => a.dia === -1 && filterTypes.has(a.tipo) &&
+    (poolSearch === "" || a.title.toLowerCase().includes(poolSearch) || (a.prop||"").toLowerCase().includes(poolSearch)));
+  if (unscheduled.length === 0) {
+    pool.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:12px 8px;text-align:center">Nenhuma atividade</div>';
+    return;
+  }
+  unscheduled.forEach(a => {
+    const c = TIPO_COLORS[a.tipo];
+    const el = document.createElement("div");
+    el.className = "pool-ev";
+    el.style.background = c.bg;
+    el.style.borderColor = c.b;
+    el.draggable = true;
+    el.dataset.id = a.id;
+    el.innerHTML = `<div class="ev-title" style="color:${c.t}">${a.title}</div>
+      <div class="ev-sub" style="color:${c.t}">${TIPO_LABELS[a.tipo]} · ${a.prop ? a.prop.split('/')[0].trim() : ''}</div>`;
+    el.ondragstart = (e) => startDragFromPool(e, a.id);
+    el.ondblclick = () => openModal(a.id);
+    addTooltip(el, a);
+    pool.appendChild(el);
+  });
+}
+
+// ── CALENDAR RENDER ──
+function renderCalendar() {
+  for (let d = 0; d < 3; d++) {
+    const col = document.getElementById("col-" + d);
+    col.querySelectorAll(".cal-ev").forEach(e => e.remove());
+  }
+  const scheduled = activities.filter(a => a.dia >= 0 && a.dia <= 2);
+  scheduled.forEach(a => {
+    placeEventInCalendar(a);
+  });
+}
+
+function placeEventInCalendar(a) {
+  const col = document.getElementById("col-" + a.dia);
+  const c = TIPO_COLORS[a.tipo];
+  const top = (a.startH - HOUR_START) * SLOT_H;
+  const height = Math.max((a.endH - a.startH) * SLOT_H - 3, 20);
+  const el = document.createElement("div");
+  el.className = "cal-ev";
+  el.id = "ev-" + a.id;
+  el.dataset.id = a.id;
+  el.style.cssText = `top:${top}px;height:${height}px;background:${c.bg};border-left-color:${c.b}`;
+  el.draggable = true;
+  el.innerHTML = `<div class="ev-title" style="color:${c.t}">${a.title}</div>
+    <div class="ev-time" style="color:${c.t}">${fmtH(a.startH)} – ${fmtH(a.endH)}</div>
+    <div class="resize-handle" data-id="${a.id}"></div>`;
+  el.ondragstart = (e) => startDragFromCal(e, a.id);
+  el.ondblclick = (e) => { if (!e.target.classList.contains("resize-handle")) openModal(a.id); };
+  el.querySelector(".resize-handle").onmousedown = (e) => startResize(e, a.id);
+  addTooltip(el, a);
+  col.appendChild(el);
+}
+
+function fmtH(h) {
+  const hh = Math.floor(h);
+  const mm = Math.round((h - hh) * 60);
+  return hh + "h" + (mm ? mm.toString().padStart(2,"0") : "");
+}
+
+// ── DRAG FROM POOL ──
+function startDragFromPool(e, id) {
+  dragId = id;
+  dragFromPool = true;
+  dragOffsetY = 0;
+  e.dataTransfer.effectAllowed = "move";
+  setTimeout(() => {
+    const el = e.target;
+    if (el) el.classList.add("dragging");
+  }, 0);
+}
+
+// ── DRAG FROM CALENDAR ──
+function startDragFromCal(e, id) {
+  if (e.target.classList.contains("resize-handle")) { e.preventDefault(); return; }
+  dragId = id;
+  dragFromPool = false;
+  const el = document.getElementById("ev-" + id);
+  const rect = el.getBoundingClientRect();
+  dragOffsetY = e.clientY - rect.top;
+  e.dataTransfer.effectAllowed = "move";
+  setTimeout(() => { if (el) el.classList.add("dragging"); }, 0);
+}
+
+// ── DROP ZONES ──
+function onDragOver(e, dia) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  document.getElementById("col-"+dia).classList.add("drag-over");
+}
+function onDragLeave(e, dia) {
+  document.getElementById("col-"+dia).classList.remove("drag-over");
+}
+function onDrop(e, dia) {
+  e.preventDefault();
+  document.getElementById("col-"+dia).classList.remove("drag-over");
+  if (dragId === null) return;
+  const col = document.getElementById("col-"+dia);
+  const rect = col.getBoundingClientRect();
+  const relY = e.clientY - rect.top - (dragFromPool ? 0 : dragOffsetY);
+  const snapped = snapToQuarter(relY / SLOT_H + HOUR_START);
+  const a = activities.find(x => x.id === dragId);
+  if (!a) return;
+  const dur = a.endH - a.startH;
+  a.dia = dia;
+  a.startH = Math.max(HOUR_START, Math.min(snapped, HOUR_END - dur));
+  a.endH = a.startH + dur;
+  dragId = null;
+  renderPool();
+  renderCalendar();
+  saveState();
+}
+
+// ── RESIZE ──
+let resizingId = null;
+let resizeStartY = 0;
+let resizeStartEndH = 0;
+
+function startResize(e, id) {
+  e.preventDefault();
+  e.stopPropagation();
+  resizingId = id;
+  resizeStartY = e.clientY;
+  const a = activities.find(x => x.id === id);
+  resizeStartEndH = a.endH;
+  document.addEventListener("mousemove", onResize);
+  document.addEventListener("mouseup", stopResize);
+}
+function onResize(e) {
+  if (resizingId === null) return;
+  const a = activities.find(x => x.id === resizingId);
+  const dy = (e.clientY - resizeStartY) / SLOT_H;
+  const newEnd = snapToQuarter(resizeStartEndH + dy);
+  a.endH = Math.max(a.startH + 0.25, Math.min(newEnd, HOUR_END));
+  const el = document.getElementById("ev-" + resizingId);
+  if (el) {
+    const height = Math.max((a.endH - a.startH) * SLOT_H - 3, 20);
+    el.style.height = height + "px";
+    el.querySelector(".ev-time").textContent = fmtH(a.startH) + " – " + fmtH(a.endH);
+  }
+}
+function stopResize() {
+  if (resizingId !== null) {
+    saveState();
+    renderCalendar();
+  }
+  resizingId = null;
+  document.removeEventListener("mousemove", onResize);
+  document.removeEventListener("mouseup", stopResize);
+}
+
+function snapToQuarter(h) {
+  return Math.round(h * 4) / 4;
+}
+
+// ── MODAL ──
+function openModal(id) {
+  editingId = id;
+  const a = activities.find(x => x.id === id);
+  document.getElementById("modal-title").textContent = id < 0 ? "Nova atividade" : "Editar atividade";
+  document.getElementById("f-title").value = a.title;
+  document.getElementById("f-tipo").value = a.tipo;
+  document.getElementById("f-start").value = hToTime(a.startH);
+  document.getElementById("f-end").value = hToTime(a.endH);
+  document.getElementById("f-prop").value = a.prop || "";
+  document.getElementById("f-obs").value = a.obs || "";
+  document.getElementById("modal").classList.add("show");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("show");
+  editingId = null;
+}
+
+function saveActivity() {
+  const a = activities.find(x => x.id === editingId);
+  a.title = document.getElementById("f-title").value.trim() || a.title;
+  a.tipo = document.getElementById("f-tipo").value;
+  a.startH = timeToH(document.getElementById("f-start").value);
+  a.endH = timeToH(document.getElementById("f-end").value);
+  if (a.endH <= a.startH) a.endH = a.startH + 1;
+  a.prop = document.getElementById("f-prop").value;
+  a.obs = document.getElementById("f-obs").value;
+  closeModal();
+  renderPool();
+  renderCalendar();
+  saveState();
+}
+
+function deleteActivity() {
+  if (!confirm("Excluir esta atividade?")) return;
+  activities = activities.filter(x => x.id !== editingId);
+  closeModal();
+  renderPool();
+  renderCalendar();
+  saveState();
+}
+
+function addNewActivity() {
+  const a = {id: nextId++, title:"Nova atividade", tipo:"indef", dia:-1, startH:9, endH:10, prop:"", obs:""};
+  activities.push(a);
+  openModal(a.id);
+}
+
+function hToTime(h) {
+  const hh = Math.floor(h).toString().padStart(2,"0");
+  const mm = Math.round((h - Math.floor(h)) * 60).toString().padStart(2,"0");
+  return hh + ":" + mm;
+}
+function timeToH(t) {
+  const [hh, mm] = t.split(":").map(Number);
+  return hh + mm / 60;
+}
+
+// ── TOOLTIP ──
+const ttEl = document.getElementById("tooltip");
+function addTooltip(el, a) {
+  el.addEventListener("mouseenter", (e) => {
+    const c = TIPO_COLORS[a.tipo];
+    ttEl.innerHTML = `<strong>${a.title}</strong><br>${TIPO_LABELS[a.tipo]}${a.prop ? "<br>👤 "+a.prop : ""}${a.obs ? "<br>📝 "+a.obs : ""}`;
+    ttEl.style.display = "block";
+  });
+  el.addEventListener("mousemove", (e) => {
+    let x = e.clientX + 14, y = e.clientY + 14;
+    if (x + 230 > window.innerWidth) x = e.clientX - 234;
+    if (y + 120 > window.innerHeight) y = e.clientY - 120;
+    ttEl.style.left = x + "px";
+    ttEl.style.top = y + "px";
+  });
+  el.addEventListener("mouseleave", () => { ttEl.style.display = "none"; });
+}
+
+// ── DRAG TO POOL (unschedule) ──
+document.querySelector(".pool").addEventListener("dragover", e => { e.preventDefault(); });
+document.querySelector(".pool").addEventListener("drop", e => {
+  e.preventDefault();
+  if (dragId === null || dragFromPool) return;
+  const a = activities.find(x => x.id === dragId);
+  if (a) { a.dia = -1; renderPool(); renderCalendar(); saveState(); }
+  dragId = null;
+});
+
+// ── KEYBOARD: fechar modal com Esc ──
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+document.getElementById("modal").addEventListener("click", e => { if (e.target === document.getElementById("modal")) closeModal(); });
+
+// ── SAVE / LOAD STATE (localStorage) ──
+function saveState() {
+  try { localStorage.setItem("scac_2026", JSON.stringify(activities)); } catch(e){}
+}
+function loadState() {
+  try {
+    const s = localStorage.getItem("scac_2026");
+    if (s) { activities = JSON.parse(s); nextId = Math.max(...activities.map(a=>a.id)) + 1; }
+  } catch(e){}
+}
+
+// ── EXPORT JSON ──
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(activities, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "scac_2026_atividades.json"; a.click();
+}
+
+// ── EXPORT HTML CALENDAR ──
+function exportHTML() {
+  const dias = ["Terça 09/06","Quarta 10/06","Quinta 11/06"];
+  let rows = "";
+  for (let h = HOUR_START; h < HOUR_END; h++) {
+    const hfmt = h + "h";
+    let cells = `<td style="font-size:10px;color:#888;padding:4px 6px;vertical-align:top;border:1px solid #e0ddd6;white-space:nowrap">${hfmt}</td>`;
+    for (let d = 0; d < 3; d++) {
+      const evs = activities.filter(a => a.dia === d && a.startH >= h && a.startH < h + 1);
+      let inner = evs.map(a => {
+        const c = TIPO_COLORS[a.tipo];
+        return `<div style="background:${c.bg};border-left:3px solid ${c.b};border-radius:4px;padding:3px 6px;margin:2px 0;font-size:11px">
+          <strong style="color:${c.t}">${a.title}</strong><br>
+          <span style="color:${c.t};opacity:0.8">${fmtH(a.startH)}–${fmtH(a.endH)}</span>
+        </div>`;
+      }).join("");
+      cells += `<td style="border:1px solid #e0ddd6;padding:4px;vertical-align:top;min-width:180px">${inner}</td>`;
+    }
+    rows += `<tr>${cells}</tr>`;
+  }
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>SCAC 2026 – Calendário</title></head>
+<body style="font-family:sans-serif;padding:20px">
+<h1 style="font-size:18px;margin-bottom:4px">VII SCAC 2026 – Calendário de Atividades</h1>
+<p style="font-size:12px;color:#666;margin-bottom:16px">IFB Campus Riacho Fundo · 09–11/06/2026</p>
+<table style="border-collapse:collapse;font-size:12px;width:100%">
+<thead><tr><th style="border:1px solid #ccc;padding:6px;background:#f5f4f0">Hora</th>
+${dias.map(d=>`<th style="border:1px solid #ccc;padding:6px;background:#f5f4f0">${d}</th>`).join("")}
+</tr></thead><tbody>${rows}</tbody></table>
+<p style="font-size:10px;color:#aaa;margin-top:12px">Gerado em ${new Date().toLocaleString("pt-BR")}</p>
+</body></html>`;
+  const blob = new Blob([html], {type:"text/html"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "scac_2026_calendario.html"; a.click();
+}
+
+// ── START ──
+loadState();
+init();
+</script>
+</body>
+</html>
