@@ -495,6 +495,64 @@ tbody td { padding: 6px 10px; vertical-align: middle; }
 .leg { display: flex; align-items: center; gap: 4px; color: #888780; }
 .ldot { width: 8px; height: 8px; border-radius: 2px; }
 
+/* CONFLITOS */
+.conflict-bar {
+  background: #fff3cd;
+  border-bottom: 1px solid #e8c84a;
+  padding: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.25s ease, padding 0.2s ease;
+}
+.conflict-bar.visible {
+  max-height: 200px;
+  padding: 0;
+}
+.conflict-bar-inner {
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.conflict-icon { font-size: 14px; flex-shrink: 0; }
+.conflict-label { font-size: 11px; font-weight: 500; color: #7a5a00; white-space: nowrap; }
+.conflict-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.conflict-chip {
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid #e8c84a;
+  border-radius: 4px;
+  padding: 3px 8px;
+  color: #7a5a00;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-family: 'DM Mono', monospace;
+}
+.conflict-chip:hover { background: #fffae8; }
+.conflict-chip strong { color: #c8401a; }
+.conflict-dismiss {
+  font-size: 10px; color: #aaa; cursor: pointer; flex-shrink: 0;
+  padding: 2px 6px; border-radius: 3px; border: 1px solid #ddd;
+  background: #fff; font-family: 'DM Mono', monospace;
+}
+.conflict-dismiss:hover { color: #666; }
+/* Cards de conflito no calendário */
+.cal-ev.has-conflict {
+  outline: 2px solid #e8c84a;
+  outline-offset: 1px;
+  z-index: 4 !important;
+}
+.conflict-stripe {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, #e8c84a 0, #e8c84a 4px, transparent 4px, transparent 8px);
+  border-radius: 3px 3px 0 0;
+  pointer-events: none;
+}
+
 /* TOOLTIP */
 #tt {
   position: fixed; background: var(--ink); color: var(--paper);
@@ -529,6 +587,15 @@ tbody td { padding: 6px 10px; vertical-align: middle; }
   <button class="hbtn" onclick="importJSON()">↑ Importar</button>
   <input type="file" id="import-input" accept=".json" style="display:none" onchange="doImport(event)">
 </header>
+
+<div class="conflict-bar" id="conflict-bar">
+  <div class="conflict-bar-inner">
+    <span class="conflict-icon">⚠️</span>
+    <span class="conflict-label" id="conflict-label"></span>
+    <div class="conflict-chips" id="conflict-chips"></div>
+    <button class="conflict-dismiss" onclick="dismissConflicts()">ignorar</button>
+  </div>
+</div>
 
 <div class="tabbar">
   <div class="tab active" onclick="switchTab('cal',this)">📅 Calendário</div>
@@ -857,6 +924,7 @@ function init() {
   buildGutter(); buildDayLines(); buildFilterTags();
   refreshLocaisDL(); refreshMgrLocalFilter();
   renderPool(); renderCalendar(); renderTable();
+  // detectConflicts já é chamado dentro de renderCalendar()
 }
 
 function buildGutter() {
@@ -933,11 +1001,85 @@ function renderPool() {
 }
 
 // ══════════════════════════════════════
+// DETECÇÃO DE CONFLITOS
+// ══════════════════════════════════════
+let conflictsDismissed = false;
+
+function detectConflicts() {
+  const IGNORE_LOCAIS = ['online', 'a definir', 'não definido'];
+  const scheduled = activities.filter(a => a.dia >= 0 && a.local &&
+    !IGNORE_LOCAIS.some(ig => a.local.toLowerCase().includes(ig)));
+
+  const conflicts = [];
+  const conflictIds = new Set();
+
+  for (let i = 0; i < scheduled.length; i++) {
+    for (let j = i + 1; j < scheduled.length; j++) {
+      const a = scheduled[i], b = scheduled[j];
+      if (a.dia !== b.dia) continue;
+      if (a.local.trim().toLowerCase() !== b.local.trim().toLowerCase()) continue;
+      if (a.startH < b.endH && b.startH < a.endH) {
+        const overlapStart = Math.max(a.startH, b.startH);
+        const overlapEnd   = Math.min(a.endH,   b.endH);
+        conflicts.push({ a, b, overlapStart, overlapEnd });
+        conflictIds.add(a.id);
+        conflictIds.add(b.id);
+      }
+    }
+  }
+
+  // Marcar cards no calendário
+  document.querySelectorAll('.cal-ev').forEach(el => {
+    const id = parseInt(el.dataset.id);
+    el.classList.toggle('has-conflict', conflictIds.has(id));
+    // remove stripe antiga
+    el.querySelectorAll('.conflict-stripe').forEach(s => s.remove());
+    if (conflictIds.has(id)) {
+      const stripe = document.createElement('div');
+      stripe.className = 'conflict-stripe';
+      el.appendChild(stripe);
+    }
+  });
+
+  // Atualizar barra
+  const bar    = document.getElementById('conflict-bar');
+  const label  = document.getElementById('conflict-label');
+  const chips  = document.getElementById('conflict-chips');
+
+  if (!conflicts.length || conflictsDismissed) {
+    bar.classList.remove('visible');
+    return;
+  }
+
+  label.textContent = conflicts.length === 1
+    ? '1 conflito de local/horário:'
+    : `${conflicts.length} conflitos de local/horário:`;
+
+  chips.innerHTML = conflicts.map(c => {
+    const dia  = DIAS[c.a.dia];
+    const oh   = fmtH(c.overlapStart) + '–' + fmtH(c.overlapEnd);
+    return `<span class="conflict-chip" onclick="openModal(${c.a.id})" title="Clique para editar '${escH(c.a.title)}'">
+      <strong>${escH(c.a.local)}</strong> · ${dia} · ${oh}<br>
+      <span style="opacity:0.75">${escH(c.a.title.substring(0,28))}… × ${escH(c.b.title.substring(0,28))}…</span>
+    </span>`;
+  }).join('');
+
+  bar.classList.add('visible');
+  conflictsDismissed = false;
+}
+
+function dismissConflicts() {
+  conflictsDismissed = true;
+  document.getElementById('conflict-bar').classList.remove('visible');
+}
+
+// ══════════════════════════════════════
 // CALENDAR
 // ══════════════════════════════════════
 function renderCalendar() {
   for(let d=0;d<3;d++) document.getElementById('col-'+d).querySelectorAll('.cal-ev').forEach(e=>e.remove());
   activities.filter(a=>a.dia>=0&&a.dia<=2).forEach(placeEv);
+  detectConflicts();
 }
 
 function placeEv(a) {
@@ -1245,7 +1387,7 @@ function addTT(el,a){
 // ══════════════════════════════════════
 // SAVE / LOAD / IMPORT / EXPORT
 // ══════════════════════════════════════
-function save(){ try{localStorage.setItem('scac_v4',JSON.stringify({activities,nextId}));}catch(e){} }
+function save(){ conflictsDismissed=false; try{localStorage.setItem('scac_v4',JSON.stringify({activities,nextId}));}catch(e){} }
 function load(){ try{ const s=localStorage.getItem('scac_v4'); if(s){const d=JSON.parse(s);activities=d.activities;nextId=d.nextId||200;} }catch(e){} }
 
 function exportJSON(){
