@@ -3,683 +3,1278 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VII SCAC 2026 – Calendário de Atividades</title>
+<title>VII SCAC 2026 – Gestão de Atividades</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap');
 
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #e0ddd6;
-    --border2: #ccc9c0;
-    --text: #1a1a18;
-    --text2: #5a5954;
-    --text3: #9a9890;
-    --radius: 8px;
-    --col-w: 220px;
-    --slot-h: 36px;
-    --c-arte-bg: #fbeaf0; --c-arte-b: #d4537e; --c-arte-t: #72243e;
-    --c-oficina-bg: #e1f5ee; --c-oficina-b: #1d9e75; --c-oficina-t: #085041;
-    --c-palestra-bg: #e6f1fb; --c-palestra-b: #378add; --c-palestra-t: #0c447c;
-    --c-degust-bg: #faeeda; --c-degust-b: #ba7517; --c-degust-t: #633806;
-    --c-poster-bg: #eeedfe; --c-poster-b: #7f77dd; --c-poster-t: #3c3489;
-    --c-mesa-bg: #faece7; --c-mesa-b: #d85a30; --c-mesa-t: #712b13;
-    --c-expo-bg: #eaf3de; --c-expo-b: #639922; --c-expo-t: #27500a;
-    --c-indef-bg: #f1efe8; --c-indef-b: #888780; --c-indef-t: #444441;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+:root {
+  --ink: #1a1915;
+  --ink2: #4a4840;
+  --ink3: #8a8780;
+  --paper: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2dfd6;
+  --border2: #ccc9be;
+  --accent: #c8401a;
+  --accent2: #e8956a;
+  --green: #2d7a4f;
+  --blue: #2b5fa0;
+  --col-w: 200px;
+  --slot-h: 34px;
+  --sidebar-w: 270px;
+}
 
-  /* ── HEADER ── */
-  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 50; }
-  header h1 { font-size: 15px; font-weight: 600; }
-  header span { font-size: 12px; color: var(--text2); }
-  .hbtn { font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface); cursor: pointer; color: var(--text); transition: background 0.15s; }
-  .hbtn:hover { background: var(--bg); }
-  .hbtn.primary { background: #1a1a18; color: #fff; border-color: #1a1a18; }
-  .hbtn.primary:hover { background: #333; }
-  header .spacer { flex: 1; }
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--paper);
+  color: var(--ink);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 12px;
+}
 
-  /* ── LAYOUT ── */
-  .layout { display: flex; height: calc(100vh - 49px); overflow: hidden; }
+/* ── HEADER ── */
+header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  height: 48px;
+}
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.logo-sub { font-size: 10px; color: #aaa9a0; font-family: 'DM Mono'; font-weight: 400; }
+.spacer { flex: 1; }
+.hbtn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  cursor: pointer;
+  color: #e0ddd6;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.hbtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.hbtn.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.hbtn.accent:hover { background: #a8320f; }
 
-  /* ── SIDEBAR ── */
-  .sidebar { width: 260px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-  .sidebar-head { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
-  .sidebar-head h2 { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .sidebar-search { width: 100%; padding: 5px 8px; border: 1px solid var(--border2); border-radius: 6px; font-size: 12px; background: var(--bg); color: var(--text); }
-  .sidebar-search:focus { outline: none; border-color: #888; }
-  .filter-row { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--border); }
-  .ftag { font-size: 10px; padding: 2px 8px; border-radius: 20px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
-  .ftag.active { opacity: 1; }
-  .ftag:not(.active) { opacity: 0.4; }
-  .pool { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-  .pool-ev { border-radius: 6px; padding: 6px 8px; cursor: grab; border-left: 3px solid; user-select: none; transition: opacity 0.15s, box-shadow 0.15s; }
-  .pool-ev:active { cursor: grabbing; }
-  .pool-ev:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-  .pool-ev.dragging { opacity: 0.4; }
-  .pool-ev .ev-title { font-size: 11px; font-weight: 500; }
-  .pool-ev .ev-sub { font-size: 10px; opacity: 0.7; margin-top: 1px; }
-  .pool-ev.placed { opacity: 0.35; }
+/* ── TABS ── */
+.tabbar {
+  display: flex;
+  background: var(--ink);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 20px;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: #888780;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.tab:hover { color: #ccc9c0; }
+.tab.active { color: #fff; border-bottom-color: var(--accent2); }
 
-  /* ── CALENDAR ── */
-  .cal-wrap { flex: 1; overflow: auto; padding: 16px; }
-  .cal-head { display: grid; grid-template-columns: 52px repeat(3, var(--col-w)); gap: 0; margin-bottom: 0; position: sticky; top: 0; background: var(--bg); z-index: 10; padding-bottom: 4px; }
-  .cal-head .col-label { text-align: center; font-size: 13px; font-weight: 600; padding: 6px 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px 6px 0 0; margin: 0 2px; }
-  .cal-head .col-label span { display: block; font-size: 10px; font-weight: 400; color: var(--text3); }
-  .cal-grid { display: grid; grid-template-columns: 52px repeat(3, var(--col-w)); gap: 0; }
-  .time-gutter { display: flex; flex-direction: column; }
-  .time-label { height: var(--slot-h); display: flex; align-items: flex-start; justify-content: flex-end; padding: 2px 6px 0 0; font-size: 10px; color: var(--text3); }
-  .day-col { position: relative; border: 1px solid var(--border); border-top: none; margin: 0 2px; background: var(--surface); }
-  .day-col .row-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--border); pointer-events: none; }
-  .day-col .row-line.hour { border-color: var(--border2); }
-  .drop-zone { position: absolute; left: 0; right: 0; transition: background 0.1s; }
-  .drop-zone.drag-over { background: rgba(55,138,221,0.08); }
+/* ── VIEWS ── */
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
 
-  /* ── CALENDAR EVENTS ── */
-  .cal-ev { position: absolute; left: 3px; right: 3px; border-radius: 5px; border-left: 3px solid; padding: 3px 5px; cursor: grab; overflow: hidden; user-select: none; transition: box-shadow 0.15s; z-index: 2; }
-  .cal-ev:active { cursor: grabbing; }
-  .cal-ev:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.18); z-index: 5; }
-  .cal-ev.dragging { opacity: 0.5; z-index: 20; }
-  .cal-ev .ev-title { font-size: 10.5px; font-weight: 500; line-height: 1.3; }
-  .cal-ev .ev-time { font-size: 9.5px; opacity: 0.75; }
-  .resize-handle { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; cursor: ns-resize; background: transparent; }
-  .resize-handle:hover { background: rgba(0,0,0,0.08); border-radius: 0 0 4px 4px; }
+/* ══════════════════════════════════════
+   CALENDÁRIO
+══════════════════════════════════════ */
+.cal-layout { display: flex; width: 100%; overflow: hidden; }
 
-  /* ── MODAL ── */
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; }
-  .overlay.show { display: flex; }
-  .modal { background: var(--surface); border-radius: 12px; padding: 20px 24px; width: 400px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-  .modal h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
-  .field { margin-bottom: 12px; }
-  .field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
-  .field input, .field select, .field textarea { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: 6px; font-size: 13px; color: var(--text); background: var(--bg); }
-  .field textarea { resize: vertical; min-height: 56px; }
-  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #555; }
-  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-  .modal-btns .btn-del { margin-right: auto; color: #c0392b; border-color: #e8b4b4; background: #fef5f5; }
-  .modal-btns .btn-del:hover { background: #fde8e8; }
-  .time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* sidebar */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sb-head {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.sb-search {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.sb-search:focus { outline: none; border-color: var(--ink2); }
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.ftag {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: 'DM Mono', monospace;
+  transition: opacity 0.12s;
+}
+.ftag:not(.active) { opacity: 0.3; }
+.pool {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pool-ev {
+  border-radius: 4px;
+  padding: 5px 7px;
+  cursor: grab;
+  border-left: 3px solid;
+  user-select: none;
+  transition: filter 0.12s;
+}
+.pool-ev:active { cursor: grabbing; }
+.pool-ev:hover { filter: brightness(0.94); }
+.pool-ev.dragging { opacity: 0.3; }
+.ev-name { font-size: 11px; font-weight: 500; line-height: 1.3; }
+.ev-meta { font-size: 9.5px; opacity: 0.65; margin-top: 1px; }
 
-  /* ── LEGEND ── */
-  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--border); font-size: 10px; }
-  .leg { display: flex; align-items: center; gap: 4px; color: var(--text2); }
-  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+/* calendar grid */
+.cal-wrap { flex: 1; overflow: auto; padding: 12px; }
+.cal-head {
+  display: grid;
+  grid-template-columns: 46px repeat(3, var(--col-w));
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+  z-index: 10;
+  padding-bottom: 3px;
+}
+.ch {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 4px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 4px 4px 0 0;
+  margin: 0 2px;
+  font-family: 'Fraunces', serif;
+}
+.ch span { display: block; font-size: 9px; font-weight: 300; color: #aaa; font-family: 'DM Mono'; margin-top: 1px; }
+.cal-grid { display: grid; grid-template-columns: 46px repeat(3, var(--col-w)); }
+.tgutter { display: flex; flex-direction: column; }
+.tlabel {
+  height: var(--slot-h);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 2px 5px 0 0;
+  font-size: 9px;
+  color: var(--ink3);
+}
+.dcol {
+  position: relative;
+  border: 1px solid var(--border);
+  border-top: none;
+  margin: 0 2px;
+  background: var(--surface);
+  transition: background 0.1s;
+}
+.dcol .hline {
+  position: absolute; left: 0; right: 0;
+  border-top: 1px solid var(--border);
+  pointer-events: none;
+}
+.dcol.drag-over { background: #e8f4fd; }
+.cal-ev {
+  position: absolute;
+  left: 3px; right: 3px;
+  border-radius: 3px;
+  border-left: 3px solid;
+  padding: 2px 4px;
+  cursor: grab;
+  overflow: hidden;
+  user-select: none;
+  z-index: 2;
+  transition: filter 0.12s;
+}
+.cal-ev:active { cursor: grabbing; }
+.cal-ev:hover { z-index: 5; filter: brightness(0.93); }
+.cal-ev.dragging { opacity: 0.4; z-index: 20; }
+.cal-ev .et { font-size: 10px; font-weight: 500; line-height: 1.3; }
+.cal-ev .eh { font-size: 9px; opacity: 0.7; }
+.cal-ev .eloc { font-size: 9px; opacity: 0.6; font-style: italic; }
+.rh { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; cursor: ns-resize; }
+.rh:hover { background: rgba(0,0,0,0.1); }
 
-  /* ── TOOLTIP ── */
-  #tooltip { position: fixed; background: #1a1a18; color: #fff; font-size: 11px; padding: 6px 10px; border-radius: 6px; pointer-events: none; display: none; z-index: 200; max-width: 220px; line-height: 1.5; }
+/* ══════════════════════════════════════
+   GERENCIAR
+══════════════════════════════════════ */
+.mgr-layout { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.mgr-bar {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.mgr-input {
+  padding: 5px 9px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.mgr-input:focus { outline: none; border-color: var(--ink2); }
+.mgr-search { width: 200px; }
+.mgr-count { font-size: 10px; color: var(--ink3); }
+.tbl-wrap { flex: 1; overflow: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+thead th {
+  position: sticky; top: 0;
+  background: var(--ink);
+  color: #ddd;
+  text-align: left;
+  padding: 7px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+}
+thead th:hover { color: #fff; }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:hover { background: var(--paper); }
+tbody td { padding: 6px 10px; vertical-align: middle; }
+.pill {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border-left: 2px solid;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+}
+.local-td { font-size: 10px; color: var(--ink2); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.act-btns { display: flex; gap: 4px; }
+.ibtn {
+  font-size: 10px; padding: 3px 8px;
+  border-radius: 3px; border: 1px solid var(--border2);
+  background: var(--surface); cursor: pointer; color: var(--ink);
+  font-family: 'DM Mono', monospace;
+}
+.ibtn:hover { background: var(--paper); }
+.ibtn.del { color: var(--accent); border-color: #f0c0b0; }
+.ibtn.del:hover { background: #fff0ec; }
+.dbadge {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  background: var(--paper); color: var(--ink2);
+  border: 1px solid var(--border); white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+}
+.dbadge.ok { background: #e8f5ee; color: var(--green); border-color: var(--green); }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+/* ══════════════════════════════════════
+   LOCAIS
+══════════════════════════════════════ */
+.locais-layout { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.locais-bar {
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.locais-grid {
+  flex: 1; overflow: auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+.local-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.local-card-head {
+  padding: 10px 12px;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+}
+.local-card-head .cnt {
+  margin-left: auto;
+  background: rgba(255,255,255,0.15);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.local-ev-list { padding: 8px; display: flex; flex-direction: column; gap: 3px; }
+.local-ev-item {
+  padding: 5px 8px;
+  border-radius: 3px;
+  border-left: 3px solid;
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: filter 0.1s;
+}
+.local-ev-item:hover { filter: brightness(0.93); }
+.local-ev-item .lev-name { font-weight: 500; }
+.local-ev-item .lev-meta { font-size: 9.5px; opacity: 0.65; margin-top: 1px; }
+.local-empty { padding: 10px 12px; font-size: 10px; color: var(--ink3); font-style: italic; }
+
+/* ══════════════════════════════════════
+   RELATÓRIOS
+══════════════════════════════════════ */
+.rel-layout { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.rel-bar {
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0; flex-wrap: wrap;
+}
+.rel-body { flex: 1; overflow: auto; padding: 20px; }
+.rel-section { margin-bottom: 28px; }
+.rel-section h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--ink);
+  color: var(--ink);
+}
+.rel-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 4px; }
+.rel-table th {
+  background: var(--ink);
+  color: #ddd;
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 500;
+}
+.rel-table td { padding: 5px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.rel-table tr:nth-child(even) td { background: var(--paper); }
+.rel-stat {
+  display: inline-block;
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 6px;
+}
+.rel-cards { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.rel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  min-width: 120px;
+}
+.rel-card .rc-val { font-family: 'Fraunces', serif; font-size: 24px; color: var(--accent); }
+.rel-card .rc-label { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(26,25,21,0.5);
+  z-index: 200; align-items: center; justify-content: center;
+}
+.overlay.show { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 22px 26px;
+  width: 500px;
+  max-width: 96vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border2);
+}
+.modal h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--ink);
+}
+.field { margin-bottom: 11px; }
+.field label {
+  display: block;
+  font-size: 9px;
+  color: var(--ink3);
+  margin-bottom: 3px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper);
+}
+.field textarea { resize: vertical; min-height: 56px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--ink2); }
+.frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.frow3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.modal-btns {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 16px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.btn-del { margin-right: auto; color: var(--accent) !important; border-color: #f0c0b0 !important; background: #fff8f6 !important; }
+.btn-del:hover { background: #fff0ec !important; }
+
+/* LEGEND */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 7px 16px;
+  background: var(--ink);
+  font-size: 9px;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.leg { display: flex; align-items: center; gap: 4px; color: #888780; }
+.ldot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* TOOLTIP */
+#tt {
+  position: fixed; background: var(--ink); color: var(--paper);
+  font-size: 10px; padding: 7px 11px; border-radius: 5px;
+  pointer-events: none; display: none; z-index: 500;
+  max-width: 260px; line-height: 1.6;
+  font-family: 'DM Mono', monospace;
+}
+
+/* PRINT */
+@media print {
+  header, .tabbar, .legend, .rel-bar { display: none !important; }
+  body { overflow: visible; height: auto; }
+  .view { display: flex !important; overflow: visible; }
+  .rel-layout, .rel-body { overflow: visible; }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>VII SCAC 2026 – Calendário de Atividades</h1>
-  <span>IFB Campus Riacho Fundo · 09–11/06/2026</span>
+  <div>
+    <div class="logo">VII SCAC 2026</div>
+    <div class="logo-sub">IFB Campus Riacho Fundo · 09–11/06/2026</div>
+  </div>
   <div class="spacer"></div>
-  <button class="hbtn" onclick="addNewActivity()">+ Nova atividade</button>
-  <button class="hbtn" onclick="exportJSON()">Exportar JSON</button>
-  <button class="hbtn primary" onclick="exportHTML()">Exportar calendário</button>
+  <button class="hbtn accent" onclick="openModal(-1)">+ Nova atividade</button>
+  <button class="hbtn" onclick="exportJSON()">↓ JSON</button>
+  <button class="hbtn" onclick="importJSON()">↑ Importar</button>
+  <input type="file" id="import-input" accept=".json" style="display:none" onchange="doImport(event)">
 </header>
 
-<div class="layout">
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-head">
-      <h2>Atividades não agendadas</h2>
-      <input class="sidebar-search" type="text" placeholder="Buscar..." oninput="filterPool(this.value)">
-    </div>
-    <div class="filter-row" id="filter-row"></div>
-    <div class="pool" id="pool"></div>
-  </div>
+<div class="tabbar">
+  <div class="tab active" onclick="switchTab('cal',this)">📅 Calendário</div>
+  <div class="tab" onclick="switchTab('mgr',this)">📋 Atividades</div>
+  <div class="tab" onclick="switchTab('loc',this)">📍 Por local</div>
+  <div class="tab" onclick="switchTab('rel',this)">📊 Relatórios</div>
+</div>
 
-  <!-- CALENDAR -->
-  <div class="cal-wrap" id="cal-wrap">
-    <div class="cal-head">
-      <div></div>
-      <div class="col-label">Terça-feira <span>09/06/2026</span></div>
-      <div class="col-label">Quarta-feira <span>10/06/2026</span></div>
-      <div class="col-label">Quinta-feira <span>11/06/2026</span></div>
+<!-- CALENDÁRIO -->
+<div class="view active" id="view-cal">
+  <div class="cal-layout">
+    <div class="sidebar">
+      <div class="sb-head">
+        <div class="sb-label">Não agendadas</div>
+        <input class="sb-search" type="text" placeholder="Buscar..." oninput="filterPool(this.value)">
+      </div>
+      <div class="filter-tags" id="filter-tags"></div>
+      <div class="pool" id="pool"
+        ondragover="event.preventDefault()"
+        ondrop="dropToPool(event)">
+      </div>
     </div>
-    <div class="cal-grid" id="cal-grid">
-      <div class="time-gutter" id="time-gutter"></div>
-      <div class="day-col" id="col-0" ondragover="onDragOver(event,0)" ondragleave="onDragLeave(event,0)" ondrop="onDrop(event,0)"></div>
-      <div class="day-col" id="col-1" ondragover="onDragOver(event,1)" ondragleave="onDragLeave(event,1)" ondrop="onDrop(event,1)"></div>
-      <div class="day-col" id="col-2" ondragover="onDragOver(event,2)" ondragleave="onDragLeave(event,2)" ondrop="onDrop(event,2)"></div>
+    <div class="cal-wrap">
+      <div class="cal-head">
+        <div></div>
+        <div class="ch">Terça-feira <span>09/06/2026</span></div>
+        <div class="ch">Quarta-feira <span>10/06/2026</span></div>
+        <div class="ch">Quinta-feira <span>11/06/2026</span></div>
+      </div>
+      <div class="cal-grid" id="cal-grid">
+        <div class="tgutter" id="tgutter"></div>
+        <div class="dcol" id="col-0" ondragover="onDragOver(event,0)" ondragleave="onDragLeave(event,0)" ondrop="onDrop(event,0)"></div>
+        <div class="dcol" id="col-1" ondragover="onDragOver(event,1)" ondragleave="onDragLeave(event,1)" ondrop="onDrop(event,1)"></div>
+        <div class="dcol" id="col-2" ondragover="onDragOver(event,2)" ondragleave="onDragLeave(event,2)" ondrop="onDrop(event,2)"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="legend-row">
-  <div class="leg"><div class="leg-dot" style="background:#d4537e"></div>Apresentação artística</div>
-  <div class="leg"><div class="leg-dot" style="background:#1d9e75"></div>Oficina</div>
-  <div class="leg"><div class="leg-dot" style="background:#378add"></div>Palestra</div>
-  <div class="leg"><div class="leg-dot" style="background:#ba7517"></div>Aula-degustação</div>
-  <div class="leg"><div class="leg-dot" style="background:#7f77dd"></div>Pôster / Ap. oral</div>
-  <div class="leg"><div class="leg-dot" style="background:#d85a30"></div>Mesa redonda / Outros</div>
-  <div class="leg"><div class="leg-dot" style="background:#639922"></div>Exposição</div>
-  <div class="leg"><div class="leg-dot" style="background:#888780"></div>Indefinido</div>
-</div>
-
-<!-- EDIT MODAL -->
-<div class="overlay" id="modal">
-  <div class="modal">
-    <h2 id="modal-title">Editar atividade</h2>
-    <div class="field">
-      <label>Título</label>
-      <input type="text" id="f-title">
-    </div>
-    <div class="field">
-      <label>Tipo</label>
-      <select id="f-tipo">
+<!-- ATIVIDADES -->
+<div class="view" id="view-mgr">
+  <div class="mgr-layout">
+    <div class="mgr-bar">
+      <input class="mgr-input mgr-search" type="text" placeholder="Buscar título, proponente ou local..." oninput="renderTable()">
+      <select class="mgr-input" id="mgr-tipo" onchange="renderTable()">
+        <option value="">Todos os tipos</option>
         <option value="arte">Apresentação artística</option>
         <option value="oficina">Oficina</option>
         <option value="palestra">Palestra</option>
         <option value="degust">Aula-degustação</option>
-        <option value="poster">Pôster / Apresentação oral</option>
-        <option value="mesa">Mesa redonda / Outros</option>
+        <option value="poster">Pôster / Ap. oral</option>
+        <option value="mesa">Mesa redonda</option>
         <option value="expo">Exposição</option>
-        <option value="indef">Indefinido</option>
+        <option value="indef">Outros</option>
       </select>
+      <select class="mgr-input" id="mgr-dia" onchange="renderTable()">
+        <option value="">Todos os dias</option>
+        <option value="-1">Não agendadas</option>
+        <option value="0">Terça 09/06</option>
+        <option value="1">Quarta 10/06</option>
+        <option value="2">Quinta 11/06</option>
+      </select>
+      <select class="mgr-input" id="mgr-local" onchange="renderTable()">
+        <option value="">Todos os locais</option>
+      </select>
+      <span class="mgr-count" id="mgr-count"></span>
+      <div class="spacer"></div>
+      <button class="hbtn accent" style="font-size:11px" onclick="openModal(-1)">+ Nova</button>
     </div>
-    <div class="field time-row">
-      <div>
-        <label>Horário início</label>
-        <input type="time" id="f-start" value="08:00">
-      </div>
-      <div>
-        <label>Horário fim</label>
-        <input type="time" id="f-end" value="09:00">
-      </div>
-    </div>
-    <div class="field">
-      <label>Proponente(s)</label>
-      <input type="text" id="f-prop">
-    </div>
-    <div class="field">
-      <label>Observações</label>
-      <textarea id="f-obs" rows="2"></textarea>
-    </div>
-    <div class="modal-btns">
-      <button class="hbtn btn-del" onclick="deleteActivity()">Excluir</button>
-      <button class="hbtn" onclick="closeModal()">Cancelar</button>
-      <button class="hbtn primary" onclick="saveActivity()">Salvar</button>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="sortBy('title')">Título ↕</th>
+          <th onclick="sortBy('tipo')">Tipo ↕</th>
+          <th onclick="sortBy('local')">Local ↕</th>
+          <th onclick="sortBy('prop')">Proponente ↕</th>
+          <th onclick="sortBy('vagas')">Vagas ↕</th>
+          <th onclick="sortBy('dia')">Dia ↕</th>
+          <th>Horário</th>
+          <th>Ações</th>
+        </tr></thead>
+        <tbody id="mgr-tbody"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
-<div id="tooltip"></div>
+<!-- POR LOCAL -->
+<div class="view" id="view-loc">
+  <div class="locais-layout">
+    <div class="locais-bar">
+      <input class="mgr-input" style="width:200px" type="text" placeholder="Filtrar local..." oninput="renderLocais(this.value)">
+      <select class="mgr-input" id="loc-dia" onchange="renderLocais()">
+        <option value="">Todos os dias</option>
+        <option value="0">Terça 09/06</option>
+        <option value="1">Quarta 10/06</option>
+        <option value="2">Quinta 11/06</option>
+        <option value="-1">Não agendadas</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
+    </div>
+    <div class="locais-grid" id="locais-grid"></div>
+  </div>
+</div>
+
+<!-- RELATÓRIOS -->
+<div class="view" id="view-rel">
+  <div class="rel-layout">
+    <div class="rel-bar">
+      <select class="mgr-input" id="rel-tipo" onchange="renderRel()">
+        <option value="geral">Relatório geral</option>
+        <option value="por-dia">Por dia</option>
+        <option value="por-local">Por local</option>
+        <option value="por-tipo">Por tipo de atividade</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
+      <button class="hbtn" onclick="exportRelHTML()">↓ Exportar HTML</button>
+    </div>
+    <div class="rel-body" id="rel-body"></div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="ldot" style="background:#d4537e"></div>Arte</div>
+  <div class="leg"><div class="ldot" style="background:#1d9e75"></div>Oficina</div>
+  <div class="leg"><div class="ldot" style="background:#378add"></div>Palestra</div>
+  <div class="leg"><div class="ldot" style="background:#ba7517"></div>Degustação</div>
+  <div class="leg"><div class="ldot" style="background:#7f77dd"></div>Pôster/Oral</div>
+  <div class="leg"><div class="ldot" style="background:#d85a30"></div>Mesa/Outros</div>
+  <div class="leg"><div class="ldot" style="background:#639922"></div>Exposição</div>
+  <div class="leg"><div class="ldot" style="background:#888780"></div>Indefinido</div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="modal-title">Atividade</h2>
+    <div class="field">
+      <label>Título *</label>
+      <input type="text" id="f-title" placeholder="Nome da atividade">
+    </div>
+    <div class="frow2">
+      <div class="field">
+        <label>Tipo *</label>
+        <select id="f-tipo">
+          <option value="arte">Apresentação artística</option>
+          <option value="oficina">Oficina</option>
+          <option value="palestra">Palestra</option>
+          <option value="degust">Aula-degustação</option>
+          <option value="poster">Pôster / Ap. oral</option>
+          <option value="mesa">Mesa redonda / Outros</option>
+          <option value="expo">Exposição</option>
+          <option value="indef">Indefinido</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Local *</label>
+        <input type="text" id="f-local" list="locais-dl" placeholder="Ex: Auditório, Sala 101…" autocomplete="off">
+        <datalist id="locais-dl"></datalist>
+      </div>
+    </div>
+    <div class="frow3">
+      <div class="field">
+        <label>Dia</label>
+        <select id="f-dia">
+          <option value="-1">Não agendado</option>
+          <option value="0">Terça 09/06</option>
+          <option value="1">Quarta 10/06</option>
+          <option value="2">Quinta 11/06</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Início</label>
+        <input type="time" id="f-start" value="09:00">
+      </div>
+      <div class="field">
+        <label>Fim</label>
+        <input type="time" id="f-end" value="10:00">
+      </div>
+    </div>
+    <div class="frow2">
+      <div class="field">
+        <label>Proponente(s)</label>
+        <input type="text" id="f-prop" placeholder="Nome / instituição">
+      </div>
+      <div class="field">
+        <label>Vagas</label>
+        <input type="text" id="f-vagas" placeholder="Ex: 30, livre…">
+      </div>
+    </div>
+    <div class="field">
+      <label>Resumo</label>
+      <textarea id="f-obs" rows="3" placeholder="Descrição da atividade, palavras-chave, observações…"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="hbtn btn-del" id="btn-del" onclick="deleteActivity()">Excluir</button>
+      <button class="hbtn" onclick="closeModal()">Cancelar</button>
+      <button class="hbtn accent" onclick="saveActivity()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="tt"></div>
 
 <script>
-// ── CONFIG ──
-const HOUR_START = 7;
-const HOUR_END   = 23;
-const SLOT_H     = 36; // px por hora
-
-const TIPO_LABELS = {
-  arte:"Apresentação artística", oficina:"Oficina", palestra:"Palestra",
-  degust:"Aula-degustação", poster:"Pôster / Ap. oral", mesa:"Mesa redonda / Outros",
-  expo:"Exposição", indef:"Indefinido"
+// ══════════════════════════════════════
+// CONSTANTES
+// ══════════════════════════════════════
+const H0=7, H1=23, SH=34;
+const DIAS=['Terça 09/06','Quarta 10/06','Quinta 11/06'];
+const TL={arte:'Apresentação artística',oficina:'Oficina',palestra:'Palestra',degust:'Aula-degustação',poster:'Pôster / Ap. oral',mesa:'Mesa redonda / Outros',expo:'Exposição',indef:'Indefinido'};
+const TC={
+  arte:{bg:'#fbeaf0',b:'#d4537e',t:'#72243e'},
+  oficina:{bg:'#e1f5ee',b:'#1d9e75',t:'#085041'},
+  palestra:{bg:'#e6f1fb',b:'#378add',t:'#0c447c'},
+  degust:{bg:'#faeeda',b:'#ba7517',t:'#633806'},
+  poster:{bg:'#eeedfe',b:'#7f77dd',t:'#3c3489'},
+  mesa:{bg:'#faece7',b:'#d85a30',t:'#712b13'},
+  expo:{bg:'#eaf3de',b:'#639922',t:'#27500a'},
+  indef:{bg:'#f1efe8',b:'#888780',t:'#444441'},
 };
 
-const TIPO_COLORS = {
-  arte:   {bg:"#fbeaf0", b:"#d4537e", t:"#72243e"},
-  oficina:{bg:"#e1f5ee", b:"#1d9e75", t:"#085041"},
-  palestra:{bg:"#e6f1fb",b:"#378add", t:"#0c447c"},
-  degust: {bg:"#faeeda", b:"#ba7517", t:"#633806"},
-  poster: {bg:"#eeedfe", b:"#7f77dd", t:"#3c3489"},
-  mesa:   {bg:"#faece7", b:"#d85a30", t:"#712b13"},
-  expo:   {bg:"#eaf3de", b:"#639922", t:"#27500a"},
-  indef:  {bg:"#f1efe8", b:"#888780", t:"#444441"},
-};
-
-// ── DADOS ──
-let activities = [
-  // AGENDADAS - Terça 09/06 (dia=0)
-  {id:1, title:"Ato Infracional (palestra)", tipo:"palestra", dia:0, startH:9.0, endH:10.0, prop:"Maria da Glória / Jair Alves", obs:"Público: ensino médio. Auditório ou sala grande."},
-  {id:2, title:"Banda Lei Seca", tipo:"arte", dia:0, startH:9.5, endH:11.0, prop:"Victor Augusto", obs:"Pátio principal. Guitarra, bateria e vocal."},
-  {id:3, title:"Pulseira de Macramê (oficina)", tipo:"oficina", dia:0, startH:9.0, endH:11.5, prop:"Rejane Vago", obs:"20 vagas. Sala com mesas."},
-  {id:4, title:"Motivação/Inglês EJA (pôster)", tipo:"poster", dia:0, startH:13.0, endH:18.0, prop:"Beatriz Marcela Silva", obs:"Pôster. 10 vagas."},
-  {id:5, title:"Coord. Apresentações Orais – Letras", tipo:"poster", dia:0, startH:14.0, endH:16.0, prop:"Bruna Zocaratto", obs:"10 vagas. Sala de aula."},
-  {id:6, title:"Gamificação Inglês – Jogos Ped. (1)", tipo:"oficina", dia:0, startH:14.0, endH:17.67, prop:"M. Antonia Maia", obs:"20 vagas. Apenas sala de aula."},
-  {id:7, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:0, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma. Sala de aula."},
-  {id:8, title:"Site Interativo / Avaliação (PIBITI)", tipo:"poster", dia:0, startH:15.0, endH:16.5, prop:"Ana Beatriz Marques Rocha", obs:"Até 30 pessoas. Auditório ou sala com projetor."},
-  {id:9, title:"Puff-Puff & Poulet – Culinária Camaronesa", tipo:"degust", dia:0, startH:15.0, endH:17.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Laboratório de Cozinha."},
-  {id:10, title:"Duo La Obscuridad (dança jazz lyrical)", tipo:"arte", dia:0, startH:17.5, endH:18.0, prop:"Ludmila e Louise Fhaedra", obs:"Pátio ou auditório. Duração: 2min14."},
-  {id:11, title:"Oficina: O Capital (Marx)", tipo:"oficina", dia:0, startH:17.5, endH:20.0, prop:"Alex Rosa Campani", obs:"25 vagas. Sala de aula."},
-  {id:12, title:"SINPEHL – Pôsteres Pós-graduação", tipo:"poster", dia:0, startH:19.0, endH:21.0, prop:"Laeticia Jensen Eble", obs:"Até 20 pôsteres. Área em frente ao auditório."},
-  {id:13, title:"Para Além dos Muros da Escola (oral)", tipo:"poster", dia:0, startH:19.0, endH:20.5, prop:"Rogério Lustosa Victor", obs:"35 vagas. Sala de aula."},
-  {id:14, title:"Felicidade no Trabalho (palestra)", tipo:"palestra", dia:0, startH:19.0, endH:20.0, prop:"Andrea Duarte (convidada)", obs:"Sala com datashow e microfone."},
-  {id:15, title:"Agricultura Irrigada – Pivôs DF (palestra)", tipo:"palestra", dia:0, startH:19.5, endH:21.5, prop:"Jackson Ryller", obs:"25 vagas. Sala com projetor."},
-  {id:16, title:"Street Food do Benin (degustação)", tipo:"degust", dia:0, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"20 vagas. Lab. de Cozinha ou Bar/Restaurante."},
-  // Quarta 10/06 (dia=1)
-  {id:17, title:"Dia do Geógrafo (mesa redonda)", tipo:"mesa", dia:1, startH:8.0, endH:12.0, prop:"José Vandério Cirqueira", obs:"Auditório – dia inteiro. Lançamento de revista."},
-  {id:18, title:"Hiroshima e Nagasaki (apresentação oral)", tipo:"poster", dia:1, startH:10.0, endH:11.5, prop:"Rogério Lustosa Victor", obs:"35 vagas. Sala de aula."},
-  {id:19, title:"Kitchen Seminar – Pesquisa Internacional (online)", tipo:"oficina", dia:1, startH:10.0, endH:12.0, prop:"Ana Luiza de França Sá", obs:"Ilimitado. Google Meet."},
-  {id:20, title:"Banda Pessoas Portáteis (show)", tipo:"arte", dia:1, startH:11.0, endH:12.0, prop:"Marco Aurélio (UnB)", obs:"Até 100 pessoas. Espaço aberto."},
-  {id:21, title:"Pôsteres Letras-Inglês (TCC/PCC)", tipo:"poster", dia:1, startH:14.0, endH:15.0, prop:"Mariana Apoteker Souza", obs:"Até 40 pessoas. Pátio frente ao auditório."},
-  {id:22, title:"Oficina Caminhando e Cantando (Gullar)", tipo:"oficina", dia:1, startH:14.5, endH:17.0, prop:"Maria Julya Béda", obs:"20 vagas. Sala com projetor."},
-  {id:23, title:"Gamificação Inglês – Jogos Ped. (2)", tipo:"oficina", dia:1, startH:14.0, endH:17.67, prop:"M. Antonia Maia", obs:"20 vagas. Apenas sala de aula."},
-  {id:24, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:1, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma. Sala de aula."},
-  {id:25, title:"Metodologias Ativas Ens. Superior (PIBIC)", tipo:"mesa", dia:1, startH:14.0, endH:16.0, prop:"Ana Luiza de França Sá", obs:"Mesa redonda."},
-  {id:26, title:"PIBID – Socialização Letras-Inglês", tipo:"mesa", dia:1, startH:14.5, endH:16.5, prop:"Bruna Zocaratto", obs:"Sala 107 (grande)."},
-  {id:27, title:"Vivência Ballroom (mesa redonda)", tipo:"mesa", dia:1, startH:14.0, endH:17.5, prop:"Camila Gonçalves / UnB", obs:"20 vagas. Sala com datashow."},
-  {id:28, title:"Banda Lei Seca (show)", tipo:"arte", dia:1, startH:16.0, endH:17.5, prop:"Victor Augusto", obs:"Pátio principal."},
-  {id:29, title:"Preconceito Linguístico – Revista Eletr. (oral)", tipo:"poster", dia:1, startH:16.5, endH:17.5, prop:"Erick Lima / Bruna Zocaratto", obs:"Sala de aula. CNPq/PIBITI."},
-  {id:30, title:"Roda de Conversa: Clube do Livro", tipo:"mesa", dia:1, startH:18.0, endH:19.0, prop:"Mariana Apoteker Souza", obs:"20 vagas. Mezanino da biblioteca ou sala."},
-  {id:31, title:"Vivência Ballroom (2º turno)", tipo:"mesa", dia:1, startH:18.5, endH:21.5, prop:"Camila Gonçalves / UnB", obs:"Cultura ballroom – história e vogue."},
-  // Quinta 11/06 (dia=2)
-  {id:32, title:"Milton Santos + Gamificação / Geografia", tipo:"oficina", dia:2, startH:8.0, endH:12.0, prop:"José Vandério / ProfGeo", obs:"Oficina dia inteiro. Formação crítica."},
-  {id:33, title:"Escrevivência e Poesia (Evaristo / Lorde)", tipo:"oficina", dia:2, startH:14.0, endH:15.5, prop:"Luciana H. Mariano da Silva", obs:"25 vagas. Sala com datashow."},
-  {id:34, title:"Oficina de TTRPG (D&D / Ordem Paranormal)", tipo:"oficina", dia:2, startH:14.0, endH:16.0, prop:"Juliana Silva de Oliveira", obs:"10 vagas. Sala com mesas."},
-  {id:35, title:"Fotografia Mobile (oficina)", tipo:"oficina", dia:2, startH:14.0, endH:17.0, prop:"Barbara Ghisolfi", obs:"10 vagas por turma."},
-  {id:36, title:"Roda de Conversa: IA e Avaliação (LAFOPE)", tipo:"mesa", dia:2, startH:14.5, endH:16.0, prop:"Bruna Zocaratto", obs:"20 vagas. Sala de aula."},
-  {id:37, title:"Cinedebate – Diver/Cine (NEABI/NUGEDIS)", tipo:"mesa", dia:2, startH:14.5, endH:17.5, prop:"Isabella Mundim / Laeticia Eble / Luciana", obs:"Até 30. Sala com datashow e ar-cond."},
-  {id:38, title:"Banda Lei Seca (show noturno)", tipo:"arte", dia:2, startH:19.0, endH:20.5, prop:"Victor Augusto", obs:"Pátio principal."},
-  {id:39, title:"Terre et Mer (Canadá/Polinésia) – turma 1", tipo:"degust", dia:2, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Lab. de Cozinha."},
-  {id:40, title:"Terre et Mer (Canadá/Polinésia) – turma 2", tipo:"degust", dia:2, startH:19.5, endH:22.0, prop:"Marina Silveira de Melo", obs:"15 vagas. Pode ser Lab. de Panificação."},
-  // NÃO AGENDADAS (dia=-1)
-  {id:41, title:"Banda GMT", tipo:"arte", dia:-1, startH:8.0, endH:9.0, prop:"Thiago Viana de Freitas / Giovanni Leite", obs:"Rock covers + autorais. Pátio coberto. Qualquer dia/horário."},
-  {id:42, title:"Banda Ondas do Riacho", tipo:"arte", dia:-1, startH:8.0, endH:9.0, prop:"Thiago Viana de Freitas", obs:"Projeto de extensão. Pátio coberto. Qualquer dia."},
-  {id:43, title:"Escola do Rock", tipo:"arte", dia:-1, startH:11.0, endH:12.5, prop:"José Giovanni / Thiago / Maurílio", obs:"100-150 pessoas. Auditório ou pátio. Sugestão: 10/06."},
-  {id:44, title:"Jukebox Teatral: Inglês em Cena", tipo:"arte", dia:-1, startH:14.33, endH:15.17, prop:"Newton Vieira Lima Neto + alunos Letras", obs:"50 min. Auditório. 09 ou 10/06, 2º ou 3º horário."},
-  {id:45, title:"Oficina de Zouk (dança a duas)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Marília de Almeida Silva (IFB Taguatinga)", obs:"30 vagas. Sala arejada. Sugestão: quarta."},
-  {id:46, title:"Oficinas Criativas NAPNE", tipo:"oficina", dia:-1, startH:9.0, endH:12.0, prop:"Higor Silva Leite / NAPNE", obs:"Horário flexível. Manhã ou tarde."},
-  {id:47, title:"Escutas Intergeracionais (Violência Digital)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Celiane Domingos de Albuquerque", obs:"Data a definir."},
-  {id:48, title:"Blackout Poetry (oficina)", tipo:"oficina", dia:-1, startH:14.0, endH:16.0, prop:"Camila Gonçalves / Giovana Nicácio", obs:"20 vagas. 09 ou 11/06 a partir das 14h."},
-  {id:49, title:"Palestra: Tecnologia e Engenharia", tipo:"palestra", dia:-1, startH:14.0, endH:16.0, prop:"Thiago Freitas / Felipe Shimabuko", obs:"50 vagas. Tarde. 09, 10 ou 11/06."},
-  {id:50, title:"Palestra: Medicina – Desafios e Perspectivas", tipo:"palestra", dia:-1, startH:14.0, endH:16.0, prop:"Thiago Freitas / Gabriela Silva", obs:"50 vagas. Tarde. 09, 10 ou 11/06."},
-  {id:51, title:"Palestra: Alimentação e Nutrição", tipo:"palestra", dia:-1, startH:8.0, endH:10.0, prop:"Thiago Freitas / Fábio Cavalcante", obs:"50 vagas. 11/06 manhã ou tarde."},
-  {id:52, title:"Palestra: Uso de Medicamentos", tipo:"palestra", dia:-1, startH:9.0, endH:11.0, prop:"Thiago Freitas / Fernando Sá", obs:"50 vagas. 11/06, 9–11h ou 10–12h."},
-  {id:53, title:"Palestra: Educação Sexual e ISTs", tipo:"palestra", dia:-1, startH:16.5, endH:18.0, prop:"Wesley Dieno / Iasmim Cruz", obs:"Atenção: proposta para 07/06 – verificar data."},
-  {id:54, title:"Exposição: Diversidade e Arte (NEABI/NUGEDIS)", tipo:"expo", dia:-1, startH:9.0, endH:17.5, prop:"Luciana / Isabella / Laeticia", obs:"Todos os dias, rotativa. Sala com datashow."},
-  {id:55, title:"Exposição: Beleza do DF", tipo:"expo", dia:-1, startH:14.0, endH:17.0, prop:"Eduardo Lucena / Marina Costa", obs:"10 e 11/06, 14h–17h."},
-  {id:56, title:"Onde a Literatura Dorme (exposição)", tipo:"expo", dia:-1, startH:9.0, endH:17.0, prop:"M.Antonia Maia / Rejane Vago / Luiz Paulo", obs:"Todos os dias. Hall de entrada ou espaço de visibilidade."},
-  {id:57, title:"Equipe Multi EaD (pôster/exposição)", tipo:"expo", dia:-1, startH:9.0, endH:17.0, prop:"Ana Luiza de França Sá", obs:"Todo o período do evento."},
-  {id:58, title:"Stand do Meu INSS", tipo:"indef", dia:-1, startH:9.0, endH:12.0, prop:"Julianne Rodrigues", obs:"Sem data/horário definido."},
+const LOCAIS_CAMPUS = [
+  'Auditório','Pátio do auditório','Paredes andar superior','Mural de vidro andar superior',
+  'Sala 101','Sala 102','Sala 103','Sala 104','Sala 105','Sala 106',
+  'Sala 107','Sala 108','Sala 109','Sala 110','Sala 111','Sala 113',
+  'Tablado em frente ao CA','Lab Informática','Lab Línguas','Lab. Hospitalidade',
+  'Lab Panificação','Lab Habilidades Básicas','Lab Cozinha Quente','Lab Cozinha Fria',
+  'Lab Bar e Restaurante','CFT sala 2','E-TEC','Lab de ciências',
+  'Biblioteca','Mezanino da Biblioteca','Vivência',
+  'Hall de entrada','Pátio – fachada direita','Pátio – fachada esquerda','Online (Google Meet)'
 ];
 
-let nextId = 100;
-let dragId = null;
-let dragFromPool = false;
-let dragOffsetY = 0;
-let editingId = null;
-let filterTypes = new Set(Object.keys(TIPO_COLORS));
-let poolSearch = "";
+// ══════════════════════════════════════
+// DADOS
+// ══════════════════════════════════════
+let activities = [
+  {id:1,title:'Ato Infracional (palestra)',tipo:'palestra',dia:0,startH:9,endH:10,local:'Auditório',prop:'Maria da Glória Ferreira de Souza / Jair Alves',vagas:'30',obs:'Voltada a estudantes do ensino médio sobre atos infracionais e legislação para menores.'},
+  {id:2,title:'Banda Lei Seca',tipo:'arte',dia:0,startH:9.5,endH:11,local:'Pátio do auditório',prop:'Victor Augusto de Souza Gaúna',vagas:'livre',obs:'Rock covers e autorais. Guitarra, bateria e vocal.'},
+  {id:3,title:'Pulseira de Macramê (oficina)',tipo:'oficina',dia:0,startH:9,endH:11.5,local:'Sala 103',prop:'Rejane Maria de Araújo Vago',vagas:'20',obs:'Oficina de trabalhos manuais. Material fornecido.'},
+  {id:4,title:'Motivação/Inglês EJA (pôster)',tipo:'poster',dia:0,startH:13,endH:18,local:'Pátio do auditório',prop:'Beatriz Marcela Rodrigues da Silva',vagas:'10',obs:'Fatores motivacionais e afetivos no ensino de inglês para EJA.'},
+  {id:5,title:'Coord. Apresentações Orais – Letras',tipo:'poster',dia:0,startH:14,endH:16,local:'Sala 107',prop:'Bruna Lourenção Zocaratto',vagas:'10',obs:'Sessões de apresentação oral de TCC e pesquisas do curso de Letras-Inglês.'},
+  {id:6,title:'Gamificação Inglês – Jogos Ped. (1)',tipo:'oficina',dia:0,startH:14,endH:17.67,local:'Sala 105',prop:'Maria Antonia Germano dos Santos Maia',vagas:'20',obs:'Criação de jogos pedagógicos de baixo custo para o ensino de inglês. Sem tecnologia digital.'},
+  {id:7,title:'Fotografia Mobile (09/06)',tipo:'oficina',dia:0,startH:14,endH:17,local:'Sala 101',prop:'Barbara Ghisolfi',vagas:'10 por turma',obs:'Introdução prática à fotografia com smartphones. Técnicas de enquadramento, composição e edição.'},
+  {id:8,title:'Site Interativo / Avaliação (PIBITI)',tipo:'poster',dia:0,startH:15,endH:16.5,local:'Sala 107',prop:'Ana Beatriz Marques Rocha / Bruna Zocaratto',vagas:'30',obs:'Apresentação de resultados de pesquisa PIBITI CNPq sobre site interativo para formação de professores de línguas.'},
+  {id:9,title:'Puff-Puff & Poulet – Culinária Camaronesa',tipo:'degust',dia:0,startH:15,endH:17,local:'Lab Cozinha Quente',prop:'Marina Silveira de Melo',vagas:'15',obs:'Três receitas camaronesas: Poulet DG (salgada), puf-puf (doce) e suco Djindja. Disciplina Francês aplicado à Gastronomia.'},
+  {id:10,title:'Duo La Obscuridad (jazz lyrical)',tipo:'arte',dia:0,startH:17.5,endH:18,local:'Auditório',prop:'Ludmila e Louise Fhaedra da Silva Pereira',vagas:'livre',obs:'Apresentação de dança estilo jazz lyrical. Duração: ~2min14.'},
+  {id:11,title:'Oficina: Uma Odisseia pelo O Capital',tipo:'oficina',dia:0,startH:17.5,endH:20,local:'Sala 102',prop:'Alex Rosa Campani',vagas:'25',obs:'Análise acessível do Livro I de O Capital de Marx. Palavras-chave: capital, fetiche da mercadoria, trabalho abstrato, valor.'},
+  {id:12,title:'SINPEHL – Pôsteres Pós-graduação',tipo:'poster',dia:0,startH:19,endH:21,local:'Pátio do auditório',prop:'Laeticia Jensen Eble',vagas:'até 20 pôsteres',obs:'I Seminário da Pós-Graduação em Ensino de Humanidades e Linguagens. Necessitam de suportes para banners.'},
+  {id:13,title:'Para Além dos Muros da Escola (oral)',tipo:'poster',dia:0,startH:19,endH:20.5,local:'Sala 106',prop:'Rogério Lustosa Victor',vagas:'35',obs:'Apresentação oral sobre articulação entre academia e comunidade.'},
+  {id:14,title:'Felicidade no Trabalho (palestra)',tipo:'palestra',dia:0,startH:19,endH:20,local:'Auditório',prop:'Andrea Duarte / Naiara Denicolo (coord.)',vagas:'livre',obs:'Palestra sobre bem-estar e felicidade no ambiente de trabalho.'},
+  {id:15,title:'Agricultura Irrigada – Pivôs DF',tipo:'palestra',dia:0,startH:19.5,endH:21.5,local:'Sala 108',prop:'Jackson Ryller dos Santos',vagas:'25',obs:'Irrigação por pivôs centrais no DF, bacias hidrográficas e sustentabilidade.'},
+  {id:16,title:'Street Food do Benin (degustação)',tipo:'degust',dia:0,startH:19.5,endH:22,local:'Lab Cozinha Quente',prop:'Marina Silveira de Melo',vagas:'20',obs:'Três receitas street food do Benin: pâté aller-retour, Yovo Doko e Gnamakoudji. Disciplina Francês aplicado à Gastronomia.'},
+  {id:17,title:'Dia do Geógrafo (mesa redonda)',tipo:'mesa',dia:1,startH:8,endH:12,local:'Auditório',prop:'José Vandério Cirqueira Pinto',vagas:'livre',obs:'Comemoração do Dia do Geógrafo (29/05) com mesa redonda e lançamento de revista acadêmica.'},
+  {id:18,title:'Hiroshima e Nagasaki (apresentação oral)',tipo:'poster',dia:1,startH:10,endH:11.5,local:'Sala 113',prop:'Rogério Lustosa Victor',vagas:'35',obs:'Reflexão sobre os bombardeios nucleares de 1945 e o debate sobre o "mal menor".'},
+  {id:19,title:'Kitchen Seminar – Pesquisa Internacional',tipo:'oficina',dia:1,startH:10,endH:12,local:'Online (Google Meet)',prop:'Ana Luiza de França Sá / Giuseppina Marsico (UNISA, Itália)',vagas:'livre',obs:'Espaço de discussão interdisciplinar em ciências humanas e sociais com pesquisadores de cinco continentes. Link: meet.google.com/cua-rfwz-quw'},
+  {id:20,title:'Escola do Rock',tipo:'arte',dia:1,startH:11,endH:12.5,local:'Auditório',prop:'José Giovanni Leite de Brito / Thiago Viana de Freitas',vagas:'100–150',obs:'Mostra musical do projeto de extensão Escola do Rock com bandas formadas por estudantes do IFB.'},
+  {id:21,title:'Banda Pessoas Portáteis (show)',tipo:'arte',dia:1,startH:11,endH:12,local:'Pátio do auditório',prop:'Marco Aurélio Oliveira da Silva (UnB)',vagas:'livre',obs:'Show que convida o público a sentir o som no corpo e perceber imagens como atmosferas compartilhadas.'},
+  {id:22,title:'Oficinas Criativas (NAPNE)',tipo:'oficina',dia:1,startH:11,endH:12,local:'Pátio do auditório',prop:'Higor Silva Leite / NAPNE',vagas:'livre',obs:'Espaço para estudantes exporem seus talentos de forma lúdica, promovendo inclusão e visibilidade.'},
+  {id:23,title:'Pôsteres Letras-Inglês (TCC/PCC)',tipo:'poster',dia:1,startH:14,endH:15,local:'Pátio do auditório',prop:'Mariana Apoteker Azevedo de Souza',vagas:'40',obs:'Socialização de projetos de pesquisa da disciplina Projeto de Conclusão de Curso de Letras-Inglês.'},
+  {id:24,title:'Jukebox Teatral: Inglês em Cena',tipo:'arte',dia:1,startH:14.17,endH:15,local:'Auditório',prop:'Newton Vieira Lima Neto + estudantes Letras-Inglês',vagas:'150',obs:'Apresentação teatral que encena momentos da disciplina Oficina de Teatro e Ensino-Aprendizagem da Língua Inglesa.'},
+  {id:25,title:'Gamificação Inglês – Jogos Ped. (2)',tipo:'oficina',dia:1,startH:14,endH:17.67,local:'Sala 105',prop:'Maria Antonia Germano dos Santos Maia',vagas:'20',obs:'Segunda turma da oficina de gamificação manual para o ensino de inglês.'},
+  {id:26,title:'Fotografia Mobile (10/06)',tipo:'oficina',dia:1,startH:14,endH:17,local:'Sala 101',prop:'Barbara Ghisolfi',vagas:'10 por turma',obs:'Segunda turma da oficina de fotografia mobile.'},
+  {id:27,title:'Metodologias Ativas Ens. Superior (PIBIC)',tipo:'mesa',dia:1,startH:15,endH:17,local:'Auditório',prop:'Ana Luiza de França Sá (coord.)',vagas:'150',obs:'Mesa redonda sobre uso de metodologias ativas em cursos de licenciatura. Projeto PIBIC.'},
+  {id:28,title:'Exposição Interativa – Jogos Didáticos (PIBID)',tipo:'poster',dia:1,startH:14.5,endH:16.5,local:'Sala 107',prop:'Bruna Lourenção Zocaratto / Beatriz Ribeiro Ferreira',vagas:'livre',obs:'Exposição interativa de jogos didáticos desenvolvidos por estudantes do PIBID de Letras-Inglês.'},
+  {id:29,title:'Oficina Caminhando e Cantando (Gullar)',tipo:'oficina',dia:1,startH:14.5,endH:17,local:'Sala 113',prop:'Maria Julya Béda / Laeticia Jensen Eble',vagas:'20',obs:'Leitura e discussão de poemas de Ferreira Gullar sobre a ditadura civil-militar brasileira. Criação de playlist colaborativa.'},
+  {id:30,title:'Vivência Ballroom (mesa + arte)',tipo:'mesa',dia:1,startH:14,endH:17.5,local:'Sala 109',prop:'Camila Pinheiro Gonçalves / Projeto Vivência Ballroom UnB',vagas:'20',obs:'Mesa redonda sobre história e cultura ballroom no DF. Vogue, hierarquia e categorias de ball. Dois turnos: 14h–17h30 e 18h30–21h30.'},
+  {id:31,title:'Banda Lei Seca (10/06)',tipo:'arte',dia:1,startH:16,endH:17.5,local:'Pátio do auditório',prop:'Victor Augusto de Souza Gaúna',vagas:'livre',obs:''},
+  {id:32,title:'Preconceito Linguístico – Revista Eletr. (oral)',tipo:'poster',dia:1,startH:16.5,endH:17.5,local:'Sala 106',prop:'Bruna Lourenção Zocaratto / Erick Gabriel da Rocha Lima',vagas:'30',obs:'Apresentação de projeto PIBITI CNPq: site interativo com revista eletrônica sobre desconstrução do preconceito linguístico.'},
+  {id:33,title:'Roda de Conversa: Clube do Livro',tipo:'mesa',dia:1,startH:18,endH:19,local:'Mezanino da Biblioteca',prop:'Mariana Apoteker Azevedo de Souza',vagas:'20',obs:'Roda de conversa sobre tradição das pinturas em henna a partir da obra A Pintora de Henna (Alka Joshi). Não precisa ter lido o livro.'},
+  {id:34,title:'Vivência Ballroom (2º turno)',tipo:'mesa',dia:1,startH:18.5,endH:21.5,local:'Sala 109',prop:'Camila Pinheiro Gonçalves / Projeto Vivência Ballroom UnB',vagas:'20',obs:'Segundo turno da Vivência Ballroom.'},
+  {id:35,title:'Estudar Geografia – Mesa redonda',tipo:'mesa',dia:1,startH:19.5,endH:22,local:'Auditório',prop:'José Vandério Cirqueira Pinto',vagas:'150',obs:'Mesa redonda em comemoração ao Dia do Geógrafo. Lançamento de número especial de revista acadêmica. Tema: Estudar Geografia no Primeiro Quartel do Séc. XXI.'},
+  {id:36,title:'Milton Santos + Gamificação / Geografia',tipo:'oficina',dia:2,startH:8,endH:12,local:'Sala 104',prop:'José Vandério Cirqueira Pinto',vagas:'a definir',obs:'Oficina sobre ensino de Geografia por meio de gamificação baseada no pensamento de Milton Santos.'},
+  {id:37,title:'Alimentação – Profissional de Saúde (palestra)',tipo:'palestra',dia:2,startH:8,endH:10,local:'Auditório',prop:'Thiago Viana de Freitas / Fábio Cavalcante (Nutricionista)',vagas:'150',obs:'Cuidado com alimentação e corpo. Voltada a alunos do ensino médio. Palestrante: Especialista em Nutrição Esportiva, Clínica Teleios.'},
+  {id:38,title:'Uso de Medicamentos e seus Desdobramentos',tipo:'palestra',dia:2,startH:10,endH:12,local:'Auditório',prop:'Thiago Viana de Freitas / Fernando Sá (Doutor em Farmácia – AstraZeneca)',vagas:'150',obs:'Uso de medicamentos e consequências. Palestrante: Doutor em Farmácia, AstraZeneca.'},
+  {id:39,title:'Fotografia Mobile (11/06)',tipo:'oficina',dia:2,startH:9,endH:12,local:'Sala 101',prop:'Barbara Ghisolfi',vagas:'10 por turma',obs:'Terceira turma da oficina de fotografia mobile.'},
+  {id:40,title:'Oficinas Criativas (NAPNE) – 11/06',tipo:'oficina',dia:2,startH:11,endH:12,local:'Pátio do auditório',prop:'Higor Silva Leite / NAPNE',vagas:'livre',obs:'Oficinas criativas para exposição de talentos estudantis e promoção de inclusão.'},
+  {id:41,title:'Escrevivência e Poesia (Evaristo/Lorde)',tipo:'oficina',dia:2,startH:14,endH:15.5,local:'Sala 110',prop:'Luciana Henrique Mariano da Silva',vagas:'25',obs:'Leitura e escrita criativa a partir de Conceição Evaristo e Audre Lorde. Memória, identidade e resistência.'},
+  {id:42,title:'Oficina de TTRPG (D&D / Ordem Paranormal)',tipo:'oficina',dia:2,startH:14,endH:16,local:'Sala 111',prop:'Juliana Silva de Oliveira + equipe',vagas:'10',obs:'Introdução ao TTRPG: regras básicas de D&D e Ordem Paranormal + campanha one-shot guiada com fichas prontas.'},
+  {id:43,title:'Fotografia Mobile – tarde (11/06)',tipo:'oficina',dia:2,startH:14,endH:17,local:'Sala 101',prop:'Barbara Ghisolfi',vagas:'10 por turma',obs:'Quarta turma da oficina de fotografia mobile.'},
+  {id:44,title:'Roda de Conversa: IA e Avaliação (LAFOPE)',tipo:'mesa',dia:2,startH:14.5,endH:16,local:'Sala 107',prop:'Bruna Lourenção Zocaratto',vagas:'20',obs:'Grupo LAFOPE discute impactos das IAs nas atividades avaliativas. Autoria, ética, feedback e confiabilidade.'},
+  {id:45,title:'Cinedebate – Divers/Cine (NEABI/NUGEDIS)',tipo:'mesa',dia:2,startH:14.5,endH:17.5,local:'Sala 109',prop:'Isabella Santos Mundim / Laeticia Jensen Eble / Luciana Mariano da Silva',vagas:'30',obs:'Projeção de filme seguida de debate sobre diversidade sexual, étnico-racial e de gênero.'},
+  {id:46,title:'Banda Lei Seca (11/06)',tipo:'arte',dia:2,startH:19,endH:20.5,local:'Pátio do auditório',prop:'Victor Augusto de Souza Gaúna',vagas:'livre',obs:''},
+  {id:47,title:'Terre et Mer – Canadá/Polinésia (turma 1)',tipo:'degust',dia:2,startH:19.5,endH:22,local:'Lab Cozinha Quente',prop:'Marina Silveira de Melo',vagas:'15',obs:'Duas receitas: Poisson cru à la Tahitienne (Polinésia Francesa) e Pet de soeur (Canadá). Disciplina Francês aplicado à Gastronomia.'},
+  {id:48,title:'Terre et Mer – Canadá/Polinésia (turma 2)',tipo:'degust',dia:2,startH:19.5,endH:22,local:'Lab Panificação',prop:'Marina Silveira de Melo',vagas:'15',obs:'Segunda turma da aula-degustação Terre et Mer.'},
+  // Não agendadas
+  {id:49,title:'Banda GMT',tipo:'arte',dia:-1,startH:8,endH:9,local:'Pátio – fachada direita',prop:'Thiago Viana de Freitas / José Giovanni Leite de Brito',vagas:'livre',obs:'Rock covers e autorais. Disponível para qualquer dia/horário.'},
+  {id:50,title:'Banda Ondas do Riacho',tipo:'arte',dia:-1,startH:8,endH:9,local:'Pátio – fachada direita',prop:'Thiago Viana de Freitas',vagas:'livre',obs:'Projeto de extensão. Disponível para qualquer dia.'},
+  {id:51,title:'Jukebox Teatral: Inglês em Cena (09/06)',tipo:'arte',dia:-1,startH:14.17,endH:15,local:'Auditório',prop:'Newton Vieira Lima Neto + estudantes Letras-Inglês',vagas:'150',obs:'Também pode ser 09/06. Confirmar com organização.'},
+  {id:52,title:'Oficina de Zouk (dança a duas)',tipo:'oficina',dia:-1,startH:14,endH:16,local:'Vivência',prop:'Marília de Almeida Silva (IFB Campus Taguatinga)',vagas:'30',obs:'Passos básicos de Zouk. Metodologias Queer de movimento. Sugestão: quarta-feira. Participantes: vestimentas leves, garrafa de água.'},
+  {id:53,title:'Escutas Intergeracionais (Violência Digital)',tipo:'oficina',dia:-1,startH:14,endH:16,local:'A definir',prop:'Celiane Domingos de Albuquerque',vagas:'a definir',obs:'Oficina sobre violência contra a mulher no mundo digital. Diálogo intergeracional sobre tecnologia e relações sociais.'},
+  {id:54,title:'Blackout Poetry (oficina)',tipo:'oficina',dia:-1,startH:14,endH:16,local:'Sala 102',prop:'Camila Pinheiro Gonçalves / Giovana Nicacio de Lima Sousa',vagas:'20',obs:'Produção de poesia autoral a partir do conto "My Body, Herself" de Carmen Maria Machado. Disponível 09 ou 11/06 a partir das 14h.'},
+  {id:55,title:'Palestra: Tecnologia nos Dias Atuais (Engenharia)',tipo:'palestra',dia:-1,startH:14,endH:16,local:'Sala 113',prop:'Thiago Viana de Freitas / Felipe Shimabuko (Mestre em Eng. Mecânica – HealthGo)',vagas:'40',obs:'Tecnologia e aplicações no mercado de trabalho. Voltada ao ensino médio. 09, 10 ou 11/06.'},
+  {id:56,title:'Palestra: Medicina – Desafios e Perspectivas',tipo:'palestra',dia:-1,startH:14,endH:16,local:'Sala 113',prop:'Thiago Viana de Freitas / Gabriela Silva (Médica)',vagas:'40',obs:'Desafios e perspectivas da área médica. Voltada ao ensino médio. 09, 10 ou 11/06.'},
+  {id:57,title:'Palestra: Educação Sexual e Saúde na Adolescência',tipo:'palestra',dia:-1,startH:16.5,endH:18,local:'Auditório',prop:'Wesley Dieno Costa de Gois / Iasmim Nadini Pastor de Freitas da Cruz',vagas:'20–100',obs:'ISTs, prevenção, preservativos, vacinação e saúde sexual. Atenção: proposta original menciona 07/06 – verificar data com organização.'},
+  {id:58,title:'Mediação de Conflitos na Escola',tipo:'mesa',dia:-1,startH:14,endH:16,local:'A definir',prop:'Fernanda Magalhães Barbosa',vagas:'a definir',obs:'Palestra e rodas de conversa mediadas sobre resolução de conflitos escolares.'},
+  {id:59,title:'Exposição: Diversidade e Arte (NEABI/NUGEDIS)',tipo:'expo',dia:-1,startH:9,endH:18,local:'A definir (sala disponível desde segunda-noite)',prop:'Luciana Mariano da Silva / Isabella Santos Mundim / Laeticia Jensen Eble',vagas:'livre',obs:'Cartazes, colagens, desenhos e fotos sobre gênero e raça. Funciona manhã, tarde e noite nos três dias. Necessita sala disponível desde segunda à noite para montagem.'},
+  {id:60,title:'Exposição: Onde a Literatura Dorme',tipo:'expo',dia:-1,startH:9,endH:17,local:'Hall de entrada',prop:'Maria Antonia Germano dos Santos Maia / Rejane Vago / Luiz Paulo',vagas:'livre',obs:'Quartos temáticos inspirados em autores da literatura brasileira, desenvolvidos por alunos de Hospedagem com apoio de IA.'},
+  {id:61,title:'Equipe Multidisciplinar EaD (exposição)',tipo:'expo',dia:-1,startH:9,endH:17,local:'Pátio do auditório',prop:'Ana Luiza de França Sá + Equipe Multi EaD',vagas:'livre',obs:'Pôster sobre o fortalecimento da EaD no IFB Campus Riacho Fundo. Todo o período do evento.'},
+  {id:62,title:'Exposição: A Beleza do DF sob uma nova ótica',tipo:'expo',dia:-1,startH:14,endH:17,local:'Sala 102',prop:'Eduardo Lucena Machado / Marina Costa Silva',vagas:'20',obs:'Exposição fotográfica com imagens do DF sob perspectivas incomuns. Sugestão: 10 e 11/06, 14h–17h.'},
+  {id:63,title:'Stand do Meu INSS',tipo:'indef',dia:-1,startH:9,endH:12,local:'A definir',prop:'Lilian Regina Alves / Julianne Rodrigues Aires / Maria Giovanna Almeida',vagas:'livre',obs:'Apresentação do aplicativo e site do Meu INSS e primeiro acesso ao SouGov. Atividade extensionista.'},
+];
 
-// ── INIT ──
-function init() {
-  buildTimeGutter();
-  buildDayLines();
-  buildFilterTags();
-  renderPool();
-  renderCalendar();
+let nextId=200, dragId=null, dragFromPool=false, dragOffsetY=0, editingId=null;
+let filterTypes=new Set(Object.keys(TC)), poolSearch='', sortCol='title', sortDir=1;
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('view-'+name).classList.add('active');
+  if(name==='mgr') renderTable();
+  if(name==='loc') renderLocais();
+  if(name==='rel') renderRel();
 }
 
-function buildTimeGutter() {
-  const g = document.getElementById("time-gutter");
-  g.style.height = ((HOUR_END - HOUR_START) * SLOT_H) + "px";
-  for (let h = HOUR_START; h <= HOUR_END; h++) {
-    const d = document.createElement("div");
-    d.className = "time-label";
-    d.textContent = h + "h";
-    g.appendChild(d);
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function init() {
+  buildGutter(); buildDayLines(); buildFilterTags();
+  refreshLocaisDL(); refreshMgrLocalFilter();
+  renderPool(); renderCalendar(); renderTable();
+}
+
+function buildGutter() {
+  const g=document.getElementById('tgutter');
+  g.style.height=((H1-H0)*SH)+'px';
+  for(let h=H0;h<=H1;h++){
+    const d=document.createElement('div');
+    d.className='tlabel'; d.textContent=h+'h'; g.appendChild(d);
   }
 }
 
 function buildDayLines() {
-  const total = (HOUR_END - HOUR_START) * SLOT_H;
-  for (let d = 0; d < 3; d++) {
-    const col = document.getElementById("col-" + d);
-    col.style.height = total + "px";
-    for (let h = HOUR_START; h <= HOUR_END; h++) {
-      const line = document.createElement("div");
-      line.className = "row-line" + (h % 1 === 0 ? " hour" : "");
-      line.style.top = ((h - HOUR_START) * SLOT_H) + "px";
-      col.appendChild(line);
+  const total=(H1-H0)*SH;
+  for(let d=0;d<3;d++){
+    const col=document.getElementById('col-'+d);
+    col.style.height=total+'px';
+    for(let h=H0;h<=H1;h++){
+      const l=document.createElement('div');
+      l.className='hline'; l.style.top=((h-H0)*SH)+'px'; col.appendChild(l);
     }
   }
 }
 
 function buildFilterTags() {
-  const row = document.getElementById("filter-row");
-  row.innerHTML = '';
-  Object.entries(TIPO_LABELS).forEach(([k, label]) => {
-    const c = TIPO_COLORS[k];
-    const btn = document.createElement("div");
-    btn.className = "ftag active";
-    btn.textContent = label.split("/")[0].trim();
-    btn.style.background = c.bg;
-    btn.style.color = c.t;
-    btn.style.borderColor = c.b;
-    btn.dataset.tipo = k;
-    btn.onclick = () => {
-      if (filterTypes.has(k)) filterTypes.delete(k);
-      else filterTypes.add(k);
-      btn.classList.toggle("active", filterTypes.has(k));
-      renderPool();
-    };
+  const row=document.getElementById('filter-tags'); row.innerHTML='';
+  Object.entries(TL).forEach(([k,label])=>{
+    const c=TC[k]; const btn=document.createElement('div');
+    btn.className='ftag active';
+    btn.textContent=label.split('/')[0].substring(0,10);
+    btn.style.cssText=`background:${c.bg};color:${c.t};border-color:${c.b}`;
+    btn.onclick=()=>{ filterTypes.has(k)?filterTypes.delete(k):filterTypes.add(k); btn.classList.toggle('active',filterTypes.has(k)); renderPool(); };
     row.appendChild(btn);
   });
 }
 
-// ── POOL ──
-function filterPool(q) {
-  poolSearch = q.toLowerCase();
-  renderPool();
+function refreshLocaisDL() {
+  const dl=document.getElementById('locais-dl'); if(!dl) return;
+  const used=[...new Set(activities.map(a=>a.local).filter(Boolean))];
+  const all=[...new Set([...LOCAIS_CAMPUS,...used])].sort();
+  dl.innerHTML=all.map(l=>`<option value="${l}">`).join('');
 }
+
+function refreshMgrLocalFilter() {
+  const sel=document.getElementById('mgr-local'); if(!sel) return;
+  const cur=sel.value;
+  const used=[...new Set(activities.map(a=>a.local).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Todos os locais</option>'+used.map(l=>`<option value="${escH(l)}">${escH(l)}</option>`).join('');
+  if(used.includes(cur)) sel.value=cur;
+}
+
+// ══════════════════════════════════════
+// POOL
+// ══════════════════════════════════════
+function filterPool(q){ poolSearch=q.toLowerCase(); renderPool(); }
 
 function renderPool() {
-  const pool = document.getElementById("pool");
-  pool.innerHTML = '';
-  const unscheduled = activities.filter(a => a.dia === -1 && filterTypes.has(a.tipo) &&
-    (poolSearch === "" || a.title.toLowerCase().includes(poolSearch) || (a.prop||"").toLowerCase().includes(poolSearch)));
-  if (unscheduled.length === 0) {
-    pool.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:12px 8px;text-align:center">Nenhuma atividade</div>';
+  const pool=document.getElementById('pool'); pool.innerHTML='';
+  const list=activities.filter(a=>a.dia===-1&&filterTypes.has(a.tipo)&&
+    (!poolSearch||a.title.toLowerCase().includes(poolSearch)||(a.prop||'').toLowerCase().includes(poolSearch)||(a.local||'').toLowerCase().includes(poolSearch)));
+  if(!list.length){
+    pool.innerHTML='<div style="font-size:10px;color:var(--ink3);padding:10px;text-align:center">Nenhuma atividade</div>';
     return;
   }
-  unscheduled.forEach(a => {
-    const c = TIPO_COLORS[a.tipo];
-    const el = document.createElement("div");
-    el.className = "pool-ev";
-    el.style.background = c.bg;
-    el.style.borderColor = c.b;
-    el.draggable = true;
-    el.dataset.id = a.id;
-    el.innerHTML = `<div class="ev-title" style="color:${c.t}">${a.title}</div>
-      <div class="ev-sub" style="color:${c.t}">${TIPO_LABELS[a.tipo]} · ${a.prop ? a.prop.split('/')[0].trim() : ''}</div>`;
-    el.ondragstart = (e) => startDragFromPool(e, a.id);
-    el.ondblclick = () => openModal(a.id);
-    addTooltip(el, a);
-    pool.appendChild(el);
+  list.forEach(a=>{
+    const c=TC[a.tipo]; const el=document.createElement('div');
+    el.className='pool-ev'; el.style.cssText=`background:${c.bg};border-color:${c.b}`;
+    el.draggable=true; el.dataset.id=a.id;
+    el.innerHTML=`<div class="ev-name" style="color:${c.t}">${a.title}</div>
+      <div class="ev-meta" style="color:${c.t}">${a.local||'—'}</div>`;
+    el.ondragstart=e=>{dragId=a.id;dragFromPool=true;dragOffsetY=0;setTimeout(()=>el.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';};
+    el.ondblclick=()=>openModal(a.id);
+    addTT(el,a); pool.appendChild(el);
   });
 }
 
-// ── CALENDAR RENDER ──
+// ══════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════
 function renderCalendar() {
-  for (let d = 0; d < 3; d++) {
-    const col = document.getElementById("col-" + d);
-    col.querySelectorAll(".cal-ev").forEach(e => e.remove());
-  }
-  const scheduled = activities.filter(a => a.dia >= 0 && a.dia <= 2);
-  scheduled.forEach(a => {
-    placeEventInCalendar(a);
+  for(let d=0;d<3;d++) document.getElementById('col-'+d).querySelectorAll('.cal-ev').forEach(e=>e.remove());
+  activities.filter(a=>a.dia>=0&&a.dia<=2).forEach(placeEv);
+}
+
+function placeEv(a) {
+  const col=document.getElementById('col-'+a.dia); const c=TC[a.tipo];
+  const top=(a.startH-H0)*SH; const h=Math.max((a.endH-a.startH)*SH-3,18);
+  const el=document.createElement('div'); el.className='cal-ev'; el.id='ev-'+a.id; el.dataset.id=a.id;
+  el.style.cssText=`top:${top}px;height:${h}px;background:${c.bg};border-left-color:${c.b}`;
+  el.draggable=true;
+  el.innerHTML=`<div class="et" style="color:${c.t}">${a.title}</div>
+    <div class="eh" style="color:${c.t}">${fmtH(a.startH)}–${fmtH(a.endH)}</div>
+    ${a.local?`<div class="eloc" style="color:${c.t}">📍${a.local}</div>`:''}
+    <div class="rh" data-id="${a.id}"></div>`;
+  el.ondragstart=e=>{ if(e.target.classList.contains('rh')){e.preventDefault();return;} dragId=a.id;dragFromPool=false;dragOffsetY=e.clientY-el.getBoundingClientRect().top;setTimeout(()=>el.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move'; };
+  el.ondblclick=e=>{ if(!e.target.classList.contains('rh')) openModal(a.id); };
+  el.querySelector('.rh').onmousedown=e=>startResize(e,a.id);
+  addTT(el,a); col.appendChild(el);
+}
+
+function fmtH(h){ const hh=Math.floor(h),mm=Math.round((h-hh)*60); return hh+'h'+(mm?String(mm).padStart(2,'0'):''); }
+
+function onDragOver(e,d){ e.preventDefault(); document.getElementById('col-'+d).classList.add('drag-over'); }
+function onDragLeave(e,d){ document.getElementById('col-'+d).classList.remove('drag-over'); }
+function onDrop(e,d){
+  e.preventDefault(); document.getElementById('col-'+d).classList.remove('drag-over');
+  if(dragId===null) return;
+  const col=document.getElementById('col-'+d);
+  const relY=e.clientY-col.getBoundingClientRect().top-(dragFromPool?0:dragOffsetY);
+  const a=activities.find(x=>x.id===dragId); if(!a) return;
+  const dur=a.endH-a.startH;
+  a.dia=d; a.startH=Math.max(H0,Math.min(snap(relY/SH+H0),H1-dur)); a.endH=a.startH+dur;
+  dragId=null; renderPool(); renderCalendar(); renderTable(); save();
+}
+function dropToPool(e){
+  e.preventDefault(); if(dragId===null||dragFromPool) return;
+  const a=activities.find(x=>x.id===dragId); if(a){a.dia=-1; renderPool();renderCalendar();renderTable();save();}
+  dragId=null;
+}
+function snap(h){ return Math.round(h*4)/4; }
+
+let rzId=null,rzY0=0,rzE0=0;
+function startResize(e,id){ e.preventDefault();e.stopPropagation(); rzId=id;rzY0=e.clientY; rzE0=activities.find(x=>x.id===id).endH; document.addEventListener('mousemove',onResize); document.addEventListener('mouseup',stopResize); }
+function onResize(e){ if(!rzId) return; const a=activities.find(x=>x.id===rzId); const ne=snap(rzE0+(e.clientY-rzY0)/SH); a.endH=Math.max(a.startH+0.25,Math.min(ne,H1)); const el=document.getElementById('ev-'+rzId); if(el){el.style.height=Math.max((a.endH-a.startH)*SH-3,18)+'px'; el.querySelector('.eh').textContent=fmtH(a.startH)+'–'+fmtH(a.endH);} }
+function stopResize(){ if(rzId){save();renderCalendar();} rzId=null; document.removeEventListener('mousemove',onResize); document.removeEventListener('mouseup',stopResize); }
+
+// ══════════════════════════════════════
+// TABELA
+// ══════════════════════════════════════
+function sortBy(col){ if(sortCol===col)sortDir*=-1; else{sortCol=col;sortDir=1;} renderTable(); }
+
+function renderTable(){
+  const q=(document.querySelector('.mgr-search')||{}).value?.toLowerCase()||'';
+  const ft=document.getElementById('mgr-tipo')?.value||'';
+  const fd=document.getElementById('mgr-dia')?.value??'';
+  const fl=document.getElementById('mgr-local')?.value||'';
+  let list=activities.filter(a=>{
+    const mq=!q||a.title.toLowerCase().includes(q)||(a.prop||'').toLowerCase().includes(q)||(a.local||'').toLowerCase().includes(q)||(a.obs||'').toLowerCase().includes(q);
+    const mt=!ft||a.tipo===ft;
+    const md=fd===''||String(a.dia)===fd;
+    const ml=!fl||a.local===fl;
+    return mq&&mt&&md&&ml;
+  });
+  list.sort((a,b)=>{ let av=a[sortCol]??'',bv=b[sortCol]??''; if(typeof av==='string')av=av.toLowerCase(); if(typeof bv==='string')bv=bv.toLowerCase(); return av<bv?-sortDir:av>bv?sortDir:0; });
+  const count=document.getElementById('mgr-count'); if(count) count.textContent=list.length+' atividade'+(list.length!==1?'s':'');
+  const tbody=document.getElementById('mgr-tbody'); if(!tbody) return;
+  tbody.innerHTML=list.map(a=>{
+    const c=TC[a.tipo]; const ok=a.dia>=0;
+    return `<tr>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${escH(a.title)}">${escH(a.title)}</td>
+      <td><span class="pill" style="background:${c.bg};border-color:${c.b};color:${c.t}">${TL[a.tipo]}</span></td>
+      <td><span class="local-td" title="${escH(a.local||'')}">${escH(a.local||'—')}</span></td>
+      <td style="color:var(--ink2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(a.prop||'—')}</td>
+      <td style="color:var(--ink3)">${escH(a.vagas||'—')}</td>
+      <td><span class="dbadge ${ok?'ok':''}">${ok?DIAS[a.dia]:'Não agendada'}</span></td>
+      <td style="color:var(--ink2);white-space:nowrap">${ok?fmtH(a.startH)+'–'+fmtH(a.endH):'—'}</td>
+      <td><div class="act-btns">
+        <button class="ibtn" onclick="openModal(${a.id})">Editar</button>
+        <button class="ibtn del" onclick="confirmDelete(${a.id})">Excluir</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// POR LOCAL
+// ══════════════════════════════════════
+function renderLocais(search) {
+  const q=(typeof search==='string'?search:(document.querySelector('.locais-bar .mgr-input')||{}).value||'').toLowerCase();
+  const fd=document.getElementById('loc-dia')?.value??'';
+  const grid=document.getElementById('locais-grid'); grid.innerHTML='';
+
+  const filtered=activities.filter(a=>{
+    const md=fd===''||String(a.dia)===fd;
+    return md;
+  });
+  const localMap={};
+  filtered.forEach(a=>{
+    const loc=a.local||'(Local não definido)';
+    if(!localMap[loc]) localMap[loc]=[];
+    localMap[loc].push(a);
+  });
+  const locais=Object.keys(localMap).sort();
+  const visible=locais.filter(l=>!q||l.toLowerCase().includes(q));
+  if(!visible.length){ grid.innerHTML='<div style="font-size:11px;color:var(--ink3);padding:20px">Nenhum local encontrado.</div>'; return; }
+  visible.forEach(loc=>{
+    const evs=localMap[loc];
+    const card=document.createElement('div'); card.className='local-card';
+    card.innerHTML=`<div class="local-card-head">📍 ${escH(loc)}<span class="cnt">${evs.length} atividade${evs.length!==1?'s':''}</span></div>
+      <div class="local-ev-list">${evs.map(a=>{const c=TC[a.tipo]; const dia=a.dia>=0?DIAS[a.dia]+' · '+fmtH(a.startH)+'–'+fmtH(a.endH):'Não agendada'; return `<div class="local-ev-item" style="background:${c.bg};border-color:${c.b}" onclick="openModal(${a.id})"><div class="lev-name" style="color:${c.t}">${escH(a.title)}</div><div class="lev-meta" style="color:${c.t}">${dia}</div></div>`;}).join('')}
+      </div>`;
+    grid.appendChild(card);
   });
 }
 
-function placeEventInCalendar(a) {
-  const col = document.getElementById("col-" + a.dia);
-  const c = TIPO_COLORS[a.tipo];
-  const top = (a.startH - HOUR_START) * SLOT_H;
-  const height = Math.max((a.endH - a.startH) * SLOT_H - 3, 20);
-  const el = document.createElement("div");
-  el.className = "cal-ev";
-  el.id = "ev-" + a.id;
-  el.dataset.id = a.id;
-  el.style.cssText = `top:${top}px;height:${height}px;background:${c.bg};border-left-color:${c.b}`;
-  el.draggable = true;
-  el.innerHTML = `<div class="ev-title" style="color:${c.t}">${a.title}</div>
-    <div class="ev-time" style="color:${c.t}">${fmtH(a.startH)} – ${fmtH(a.endH)}</div>
-    <div class="resize-handle" data-id="${a.id}"></div>`;
-  el.ondragstart = (e) => startDragFromCal(e, a.id);
-  el.ondblclick = (e) => { if (!e.target.classList.contains("resize-handle")) openModal(a.id); };
-  el.querySelector(".resize-handle").onmousedown = (e) => startResize(e, a.id);
-  addTooltip(el, a);
-  col.appendChild(el);
-}
+// ══════════════════════════════════════
+// RELATÓRIOS
+// ══════════════════════════════════════
+function renderRel() {
+  const tipo=document.getElementById('rel-tipo')?.value||'geral';
+  const body=document.getElementById('rel-body');
+  const total=activities.length;
+  const agendadas=activities.filter(a=>a.dia>=0);
+  const naoProg=activities.filter(a=>a.dia===-1);
 
-function fmtH(h) {
-  const hh = Math.floor(h);
-  const mm = Math.round((h - hh) * 60);
-  return hh + "h" + (mm ? mm.toString().padStart(2,"0") : "");
-}
+  if(tipo==='geral') {
+    const porTipo={};
+    activities.forEach(a=>{ porTipo[a.tipo]=(porTipo[a.tipo]||0)+1; });
+    const vagas=activities.filter(a=>a.vagas&&!isNaN(parseInt(a.vagas))).reduce((s,a)=>s+parseInt(a.vagas),0);
+    body.innerHTML=`
+      <div class="rel-section">
+        <h2>VII SCAC 2026 – Resumo Geral</h2>
+        <div class="rel-cards">
+          <div class="rel-card"><div class="rc-val">${total}</div><div class="rc-label">Atividades no total</div></div>
+          <div class="rel-card"><div class="rc-val">${agendadas.length}</div><div class="rc-label">Agendadas</div></div>
+          <div class="rel-card"><div class="rc-val">${naoProg.length}</div><div class="rc-label">Sem horário definido</div></div>
+          <div class="rel-card"><div class="rc-val">${[...new Set(activities.map(a=>a.local).filter(Boolean))].length}</div><div class="rc-label">Locais utilizados</div></div>
+          <div class="rel-card"><div class="rc-val">${vagas}+</div><div class="rc-label">Vagas (estimado)</div></div>
+        </div>
+      </div>
+      <div class="rel-section">
+        <h2>Por tipo de atividade</h2>
+        <table class="rel-table">
+          <thead><tr><th>Tipo</th><th>Quantidade</th></tr></thead>
+          <tbody>${Object.entries(porTipo).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${TL[k]}</td><td>${v}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+      <div class="rel-section">
+        <h2>Atividades não agendadas (${naoProg.length})</h2>
+        <table class="rel-table">
+          <thead><tr><th>Título</th><th>Tipo</th><th>Local previsto</th><th>Proponente</th></tr></thead>
+          <tbody>${naoProg.map(a=>`<tr><td>${escH(a.title)}</td><td>${TL[a.tipo]}</td><td>${escH(a.local||'—')}</td><td>${escH((a.prop||'').split('/')[0].split(',')[0])}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+  }
 
-// ── DRAG FROM POOL ──
-function startDragFromPool(e, id) {
-  dragId = id;
-  dragFromPool = true;
-  dragOffsetY = 0;
-  e.dataTransfer.effectAllowed = "move";
-  setTimeout(() => {
-    const el = e.target;
-    if (el) el.classList.add("dragging");
-  }, 0);
-}
+  else if(tipo==='por-dia') {
+    body.innerHTML=DIAS.map((dia,di)=>{
+      const evs=activities.filter(a=>a.dia===di).sort((a,b)=>a.startH-b.startH);
+      return `<div class="rel-section">
+        <h2>${dia}</h2>
+        <table class="rel-table">
+          <thead><tr><th>Horário</th><th>Título</th><th>Tipo</th><th>Local</th><th>Proponente</th><th>Vagas</th></tr></thead>
+          <tbody>${evs.map(a=>`<tr><td style="white-space:nowrap">${fmtH(a.startH)}–${fmtH(a.endH)}</td><td>${escH(a.title)}</td><td>${TL[a.tipo]}</td><td>${escH(a.local||'—')}</td><td>${escH((a.prop||'').split('/')[0].split(',')[0])}</td><td>${escH(a.vagas||'—')}</td></tr>`).join('')}
+          </tbody>
+        </table>
+        <p style="font-size:10px;color:var(--ink3);margin-top:4px">${evs.length} atividade${evs.length!==1?'s':''}</p>
+      </div>`;
+    }).join('');
+  }
 
-// ── DRAG FROM CALENDAR ──
-function startDragFromCal(e, id) {
-  if (e.target.classList.contains("resize-handle")) { e.preventDefault(); return; }
-  dragId = id;
-  dragFromPool = false;
-  const el = document.getElementById("ev-" + id);
-  const rect = el.getBoundingClientRect();
-  dragOffsetY = e.clientY - rect.top;
-  e.dataTransfer.effectAllowed = "move";
-  setTimeout(() => { if (el) el.classList.add("dragging"); }, 0);
-}
+  else if(tipo==='por-local') {
+    const localMap={};
+    activities.filter(a=>a.dia>=0).forEach(a=>{
+      const l=a.local||'(Não definido)';
+      if(!localMap[l]) localMap[l]=[];
+      localMap[l].push(a);
+    });
+    body.innerHTML=Object.entries(localMap).sort().map(([loc,evs])=>`
+      <div class="rel-section">
+        <h2>📍 ${escH(loc)}</h2>
+        <table class="rel-table">
+          <thead><tr><th>Dia</th><th>Horário</th><th>Título</th><th>Tipo</th><th>Proponente</th><th>Vagas</th></tr></thead>
+          <tbody>${evs.sort((a,b)=>a.dia-b.dia||a.startH-b.startH).map(a=>`<tr><td style="white-space:nowrap">${DIAS[a.dia]}</td><td style="white-space:nowrap">${fmtH(a.startH)}–${fmtH(a.endH)}</td><td>${escH(a.title)}</td><td>${TL[a.tipo]}</td><td>${escH((a.prop||'').split('/')[0].split(',')[0])}</td><td>${escH(a.vagas||'—')}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('');
+  }
 
-// ── DROP ZONES ──
-function onDragOver(e, dia) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
-  document.getElementById("col-"+dia).classList.add("drag-over");
-}
-function onDragLeave(e, dia) {
-  document.getElementById("col-"+dia).classList.remove("drag-over");
-}
-function onDrop(e, dia) {
-  e.preventDefault();
-  document.getElementById("col-"+dia).classList.remove("drag-over");
-  if (dragId === null) return;
-  const col = document.getElementById("col-"+dia);
-  const rect = col.getBoundingClientRect();
-  const relY = e.clientY - rect.top - (dragFromPool ? 0 : dragOffsetY);
-  const snapped = snapToQuarter(relY / SLOT_H + HOUR_START);
-  const a = activities.find(x => x.id === dragId);
-  if (!a) return;
-  const dur = a.endH - a.startH;
-  a.dia = dia;
-  a.startH = Math.max(HOUR_START, Math.min(snapped, HOUR_END - dur));
-  a.endH = a.startH + dur;
-  dragId = null;
-  renderPool();
-  renderCalendar();
-  saveState();
-}
-
-// ── RESIZE ──
-let resizingId = null;
-let resizeStartY = 0;
-let resizeStartEndH = 0;
-
-function startResize(e, id) {
-  e.preventDefault();
-  e.stopPropagation();
-  resizingId = id;
-  resizeStartY = e.clientY;
-  const a = activities.find(x => x.id === id);
-  resizeStartEndH = a.endH;
-  document.addEventListener("mousemove", onResize);
-  document.addEventListener("mouseup", stopResize);
-}
-function onResize(e) {
-  if (resizingId === null) return;
-  const a = activities.find(x => x.id === resizingId);
-  const dy = (e.clientY - resizeStartY) / SLOT_H;
-  const newEnd = snapToQuarter(resizeStartEndH + dy);
-  a.endH = Math.max(a.startH + 0.25, Math.min(newEnd, HOUR_END));
-  const el = document.getElementById("ev-" + resizingId);
-  if (el) {
-    const height = Math.max((a.endH - a.startH) * SLOT_H - 3, 20);
-    el.style.height = height + "px";
-    el.querySelector(".ev-time").textContent = fmtH(a.startH) + " – " + fmtH(a.endH);
+  else if(tipo==='por-tipo') {
+    body.innerHTML=Object.entries(TL).map(([k,label])=>{
+      const evs=activities.filter(a=>a.tipo===k).sort((a,b)=>a.dia-b.dia||a.startH-b.startH);
+      if(!evs.length) return '';
+      const c=TC[k];
+      return `<div class="rel-section">
+        <h2 style="border-color:${c.b}">${label} (${evs.length})</h2>
+        <table class="rel-table">
+          <thead><tr><th>Dia</th><th>Horário</th><th>Título</th><th>Local</th><th>Proponente</th><th>Vagas</th></tr></thead>
+          <tbody>${evs.map(a=>`<tr><td>${a.dia>=0?DIAS[a.dia]:'Não agendada'}</td><td style="white-space:nowrap">${a.dia>=0?fmtH(a.startH)+'–'+fmtH(a.endH):'—'}</td><td>${escH(a.title)}</td><td>${escH(a.local||'—')}</td><td>${escH((a.prop||'').split('/')[0].split(',')[0])}</td><td>${escH(a.vagas||'—')}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }).join('');
   }
 }
-function stopResize() {
-  if (resizingId !== null) {
-    saveState();
-    renderCalendar();
-  }
-  resizingId = null;
-  document.removeEventListener("mousemove", onResize);
-  document.removeEventListener("mouseup", stopResize);
+
+function exportRelHTML() {
+  const tipo=document.getElementById('rel-tipo')?.value||'geral';
+  const labels={geral:'Geral','por-dia':'Por Dia','por-local':'Por Local','por-tipo':'Por Tipo'};
+  renderRel();
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>SCAC 2026 – Relatório ${labels[tipo]}</title>
+<style>body{font-family:sans-serif;padding:24px;max-width:900px;margin:0 auto;font-size:12px}h1{font-size:18px;margin-bottom:4px}h2{font-size:14px;margin:20px 0 8px;padding-bottom:5px;border-bottom:2px solid #1a1915}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a1915;color:#ddd;text-align:left;padding:6px 10px}td{padding:5px 10px;border-bottom:1px solid #e0ddd6}tr:nth-child(even) td{background:#f7f5f0}.card{display:inline-block;border:1px solid #e0ddd6;border-radius:6px;padding:10px 16px;margin:0 8px 8px 0;min-width:100px}.cv{font-size:22px;color:#c8401a;font-weight:700}.cl{font-size:10px;color:#888}</style>
+</head><body>
+<h1>VII SCAC 2026 – Relatório ${labels[tipo]}</h1>
+<p style="color:#888;font-size:11px;margin-bottom:16px">IFB Campus Riacho Fundo · 09–11/06/2026 · Gerado em ${new Date().toLocaleString('pt-BR')}</p>
+${document.getElementById('rel-body').innerHTML}
+</body></html>`;
+  const b=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`scac_relatorio_${tipo}.html`;a.click();
 }
 
-function snapToQuarter(h) {
-  return Math.round(h * 4) / 4;
-}
-
-// ── MODAL ──
+// ══════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════
 function openModal(id) {
-  editingId = id;
-  const a = activities.find(x => x.id === id);
-  document.getElementById("modal-title").textContent = id < 0 ? "Nova atividade" : "Editar atividade";
-  document.getElementById("f-title").value = a.title;
-  document.getElementById("f-tipo").value = a.tipo;
-  document.getElementById("f-start").value = hToTime(a.startH);
-  document.getElementById("f-end").value = hToTime(a.endH);
-  document.getElementById("f-prop").value = a.prop || "";
-  document.getElementById("f-obs").value = a.obs || "";
-  document.getElementById("modal").classList.add("show");
+  editingId=id; const isNew=id===-1;
+  const a=isNew?{id:-1,title:'',tipo:'oficina',dia:-1,startH:9,endH:10,local:'',prop:'',vagas:'',obs:''}:activities.find(x=>x.id===id);
+  document.getElementById('modal-title').textContent=isNew?'Nova atividade':'Editar atividade';
+  document.getElementById('f-title').value=a.title;
+  document.getElementById('f-tipo').value=a.tipo;
+  document.getElementById('f-local').value=a.local||'';
+  document.getElementById('f-dia').value=a.dia;
+  document.getElementById('f-start').value=hToTime(a.startH);
+  document.getElementById('f-end').value=hToTime(a.endH);
+  document.getElementById('f-prop').value=a.prop||'';
+  document.getElementById('f-vagas').value=a.vagas||'';
+  document.getElementById('f-obs').value=a.obs||'';
+  document.getElementById('btn-del').style.display=isNew?'none':'';
+  document.getElementById('modal').classList.add('show');
+  setTimeout(()=>document.getElementById('f-title').focus(),50);
 }
 
-function closeModal() {
-  document.getElementById("modal").classList.remove("show");
-  editingId = null;
-}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); editingId=null; }
 
 function saveActivity() {
-  const a = activities.find(x => x.id === editingId);
-  a.title = document.getElementById("f-title").value.trim() || a.title;
-  a.tipo = document.getElementById("f-tipo").value;
-  a.startH = timeToH(document.getElementById("f-start").value);
-  a.endH = timeToH(document.getElementById("f-end").value);
-  if (a.endH <= a.startH) a.endH = a.startH + 1;
-  a.prop = document.getElementById("f-prop").value;
-  a.obs = document.getElementById("f-obs").value;
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){alert('O título é obrigatório.');document.getElementById('f-title').focus();return;}
+  const isNew=editingId===-1;
+  const a=isNew?{}:activities.find(x=>x.id===editingId);
+  a.title=title;
+  a.tipo=document.getElementById('f-tipo').value;
+  a.local=document.getElementById('f-local').value.trim();
+  a.dia=parseInt(document.getElementById('f-dia').value);
+  a.startH=timeToH(document.getElementById('f-start').value);
+  a.endH=timeToH(document.getElementById('f-end').value);
+  if(a.endH<=a.startH) a.endH=a.startH+1;
+  a.prop=document.getElementById('f-prop').value.trim();
+  a.vagas=document.getElementById('f-vagas').value.trim();
+  a.obs=document.getElementById('f-obs').value.trim();
+  if(isNew){a.id=nextId++;activities.push(a);}
   closeModal();
-  renderPool();
-  renderCalendar();
-  saveState();
+  refreshLocaisDL(); refreshMgrLocalFilter();
+  renderPool(); renderCalendar(); renderTable(); save();
 }
 
-function deleteActivity() {
-  if (!confirm("Excluir esta atividade?")) return;
-  activities = activities.filter(x => x.id !== editingId);
-  closeModal();
-  renderPool();
-  renderCalendar();
-  saveState();
-}
-
-function addNewActivity() {
-  const a = {id: nextId++, title:"Nova atividade", tipo:"indef", dia:-1, startH:9, endH:10, prop:"", obs:""};
-  activities.push(a);
-  openModal(a.id);
-}
-
-function hToTime(h) {
-  const hh = Math.floor(h).toString().padStart(2,"0");
-  const mm = Math.round((h - Math.floor(h)) * 60).toString().padStart(2,"0");
-  return hh + ":" + mm;
-}
-function timeToH(t) {
-  const [hh, mm] = t.split(":").map(Number);
-  return hh + mm / 60;
-}
-
-// ── TOOLTIP ──
-const ttEl = document.getElementById("tooltip");
-function addTooltip(el, a) {
-  el.addEventListener("mouseenter", (e) => {
-    const c = TIPO_COLORS[a.tipo];
-    ttEl.innerHTML = `<strong>${a.title}</strong><br>${TIPO_LABELS[a.tipo]}${a.prop ? "<br>👤 "+a.prop : ""}${a.obs ? "<br>📝 "+a.obs : ""}`;
-    ttEl.style.display = "block";
-  });
-  el.addEventListener("mousemove", (e) => {
-    let x = e.clientX + 14, y = e.clientY + 14;
-    if (x + 230 > window.innerWidth) x = e.clientX - 234;
-    if (y + 120 > window.innerHeight) y = e.clientY - 120;
-    ttEl.style.left = x + "px";
-    ttEl.style.top = y + "px";
-  });
-  el.addEventListener("mouseleave", () => { ttEl.style.display = "none"; });
-}
-
-// ── DRAG TO POOL (unschedule) ──
-document.querySelector(".pool").addEventListener("dragover", e => { e.preventDefault(); });
-document.querySelector(".pool").addEventListener("drop", e => {
-  e.preventDefault();
-  if (dragId === null || dragFromPool) return;
-  const a = activities.find(x => x.id === dragId);
-  if (a) { a.dia = -1; renderPool(); renderCalendar(); saveState(); }
-  dragId = null;
-});
-
-// ── KEYBOARD: fechar modal com Esc ──
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
-document.getElementById("modal").addEventListener("click", e => { if (e.target === document.getElementById("modal")) closeModal(); });
-
-// ── SAVE / LOAD STATE (localStorage) ──
-function saveState() {
-  try { localStorage.setItem("scac_2026", JSON.stringify(activities)); } catch(e){}
-}
-function loadState() {
-  try {
-    const s = localStorage.getItem("scac_2026");
-    if (s) { activities = JSON.parse(s); nextId = Math.max(...activities.map(a=>a.id)) + 1; }
-  } catch(e){}
-}
-
-// ── EXPORT JSON ──
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(activities, null, 2)], {type:"application/json"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = "scac_2026_atividades.json"; a.click();
-}
-
-// ── EXPORT HTML CALENDAR ──
-function exportHTML() {
-  const dias = ["Terça 09/06","Quarta 10/06","Quinta 11/06"];
-  let rows = "";
-  for (let h = HOUR_START; h < HOUR_END; h++) {
-    const hfmt = h + "h";
-    let cells = `<td style="font-size:10px;color:#888;padding:4px 6px;vertical-align:top;border:1px solid #e0ddd6;white-space:nowrap">${hfmt}</td>`;
-    for (let d = 0; d < 3; d++) {
-      const evs = activities.filter(a => a.dia === d && a.startH >= h && a.startH < h + 1);
-      let inner = evs.map(a => {
-        const c = TIPO_COLORS[a.tipo];
-        return `<div style="background:${c.bg};border-left:3px solid ${c.b};border-radius:4px;padding:3px 6px;margin:2px 0;font-size:11px">
-          <strong style="color:${c.t}">${a.title}</strong><br>
-          <span style="color:${c.t};opacity:0.8">${fmtH(a.startH)}–${fmtH(a.endH)}</span>
-        </div>`;
-      }).join("");
-      cells += `<td style="border:1px solid #e0ddd6;padding:4px;vertical-align:top;min-width:180px">${inner}</td>`;
-    }
-    rows += `<tr>${cells}</tr>`;
+function confirmDelete(id){
+  const a=activities.find(x=>x.id===id); if(!a) return;
+  if(confirm(`Excluir "${a.title}"?`)){
+    activities=activities.filter(x=>x.id!==id);
+    refreshLocaisDL(); refreshMgrLocalFilter();
+    renderPool();renderCalendar();renderTable();save();
   }
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>SCAC 2026 – Calendário</title></head>
-<body style="font-family:sans-serif;padding:20px">
-<h1 style="font-size:18px;margin-bottom:4px">VII SCAC 2026 – Calendário de Atividades</h1>
-<p style="font-size:12px;color:#666;margin-bottom:16px">IFB Campus Riacho Fundo · 09–11/06/2026</p>
-<table style="border-collapse:collapse;font-size:12px;width:100%">
-<thead><tr><th style="border:1px solid #ccc;padding:6px;background:#f5f4f0">Hora</th>
-${dias.map(d=>`<th style="border:1px solid #ccc;padding:6px;background:#f5f4f0">${d}</th>`).join("")}
-</tr></thead><tbody>${rows}</tbody></table>
-<p style="font-size:10px;color:#aaa;margin-top:12px">Gerado em ${new Date().toLocaleString("pt-BR")}</p>
-</body></html>`;
-  const blob = new Blob([html], {type:"text/html"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = "scac_2026_calendario.html"; a.click();
+}
+function deleteActivity(){
+  if(editingId===-1){closeModal();return;}
+  const a=activities.find(x=>x.id===editingId); if(!a) return;
+  if(confirm(`Excluir "${a.title}"?`)){
+    activities=activities.filter(x=>x.id!==editingId);
+    closeModal(); refreshLocaisDL(); refreshMgrLocalFilter();
+    renderPool();renderCalendar();renderTable();save();
+  }
 }
 
-// ── START ──
-loadState();
-init();
+function hToTime(h){ return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0'); }
+function timeToH(t){ const[hh,mm]=t.split(':').map(Number); return hh+mm/60; }
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ══════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════
+const ttEl=document.getElementById('tt');
+function addTT(el,a){
+  el.addEventListener('mouseenter',()=>{
+    ttEl.innerHTML=`<strong>${a.title}</strong><br>${TL[a.tipo]}${a.local?'<br>📍 '+a.local:''}${a.prop?'<br>👤 '+a.prop:''}${a.vagas?'<br>👥 '+a.vagas+' vagas':''}${a.obs?'<br>📝 '+a.obs.substring(0,120)+'…':''}`;
+    ttEl.style.display='block';
+  });
+  el.addEventListener('mousemove',e=>{
+    let x=e.clientX+14,y=e.clientY+14;
+    if(x+270>window.innerWidth) x=e.clientX-274;
+    if(y+140>window.innerHeight) y=e.clientY-140;
+    ttEl.style.left=x+'px';ttEl.style.top=y+'px';
+  });
+  el.addEventListener('mouseleave',()=>ttEl.style.display='none');
+}
+
+// ══════════════════════════════════════
+// SAVE / LOAD / IMPORT / EXPORT
+// ══════════════════════════════════════
+function save(){ try{localStorage.setItem('scac_v4',JSON.stringify({activities,nextId}));}catch(e){} }
+function load(){ try{ const s=localStorage.getItem('scac_v4'); if(s){const d=JSON.parse(s);activities=d.activities;nextId=d.nextId||200;} }catch(e){} }
+
+function exportJSON(){
+  const b=new Blob([JSON.stringify({activities,nextId},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='scac_2026.json';a.click();
+}
+function importJSON(){ document.getElementById('import-input').click(); }
+function doImport(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ try{
+    const d=JSON.parse(ev.target.result);
+    if(d.activities){
+      if(!confirm(`Importar ${d.activities.length} atividades? Os dados atuais serão substituídos.`)) return;
+      activities=d.activities; nextId=d.nextId||200;
+      save(); refreshLocaisDL(); refreshMgrLocalFilter();
+      renderPool(); renderCalendar(); renderTable();
+      alert('Importado com sucesso!');
+    }
+  }catch(err){alert('Erro ao importar: '+err.message);} };
+  r.readAsText(f);
+  e.target.value='';
+}
+
+// ══════════════════════════════════════
+// START
+// ══════════════════════════════════════
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+load(); init();
 </script>
 </body>
 </html>
